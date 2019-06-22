@@ -16,3 +16,21 @@ Design and implement a RESTful API (including data model and the backing impleme
 2. There are no detailed requirements, use common sense.
 
 Please put your work on github or bitbucket.
+
+## Running
+
+Using the Gretty (Gradle Plugin) run de command bellow:
+
+- **Unix**: `./gradlew appRun`
+- **Windows**: `gradle.bat appRun`
+
+## Build final project
+
+Build the standalone project, run:
+
+`./gradlew buildProduct`
+
+This command will create a directory on *build/output/account-management*
+that contains the standalone application with scripts for run it
+(e.g. *run.sh, run.bat, start.sh, start.bat ...*).
+
