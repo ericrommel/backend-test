@@ -1,5 +1,6 @@
 package com.erommel;
 
+import com.erommel.repository.HibernateConfiguration;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 

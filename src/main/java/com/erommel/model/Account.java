@@ -1,23 +1,34 @@
 package com.erommel.model;
 
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+@Table(name = "accounts")
 public class Account {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seqAccount")
+    @SequenceGenerator(name = "seqAccount",
+            sequenceName = "seq_account",
+            allocationSize = 1)
+    private long number;
+
+    @Column(nullable = false, columnDefinition = "NUMBER default 0")
     private String currency;
-    private String name;
+
+    @Column(nullable = false, columnDefinition = "NUMBER default 0")
     private double balance;
 
-    public Account(String name, String currency) {
-        this.name = name;
-        this.currency = currency;
+    @OneToMany(mappedBy = "account")
+    private List<Client> clients;
+
+    public long getNumber() {
+        return number;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public void setNumber(long number) {
+        this.number = number;
     }
 
     public String getCurrency() {
@@ -26,14 +37,6 @@ public class Account {
 
     public void setCurrency(String currency) {
         this.currency = currency;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public double getBalance() {
