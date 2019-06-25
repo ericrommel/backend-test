@@ -22,6 +22,22 @@ public abstract class Repository<T, ID extends Serializable> {
                 .getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
+    public boolean update(T element) {
+        Session session = getSession();
+        try {
+            session.beginTransaction();
+            session.update(element);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            LOG.log(Level.WARNING, "Error on update " + element.toString(), e);
+        } finally {
+            session.close();
+        }
+        return false;
+    }
+
     public Serializable save(T element) {
         Session session = getSession();
         try {
@@ -39,6 +55,7 @@ public abstract class Repository<T, ID extends Serializable> {
         }
         return null;
     }
+
     public boolean remove(T element) {
         Session session = getSession();
         try {
@@ -50,7 +67,7 @@ public abstract class Repository<T, ID extends Serializable> {
 
         } catch (Exception e) {
             session.getTransaction().rollback();
-            throw new RuntimeException("Error on remove " + element.toString());
+            throw new RuntimeException("Error on remove " + element.toString(), e);
         } finally {
             session.close();
         }

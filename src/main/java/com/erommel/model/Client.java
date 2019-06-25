@@ -1,5 +1,6 @@
 package com.erommel.model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -24,10 +25,8 @@ public class Client {
     private String documentId;
 
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "account_fk"),
-            name = "account_number")
-    private Account account;
+    @OneToMany
+    private List<Account> accounts;
 
     public Client() {
 
@@ -45,12 +44,12 @@ public class Client {
         this.id = id;
     }
 
-    public Account getAccount() {
-        return account;
+    public List<Account> getAccounts() {
+        return accounts;
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 
     public String getName() {

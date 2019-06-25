@@ -1,7 +1,6 @@
 package com.erommel.model;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "accounts")
@@ -14,14 +13,16 @@ public class Account {
             allocationSize = 1)
     private long number;
 
-    @Column(nullable = false, columnDefinition = "NUMBER default 0")
-    private String currency;
+    @Column(nullable = false, columnDefinition = "VARCHAR default 'EUR'")
+    private String currency = "EUR";
 
     @Column(nullable = false, columnDefinition = "NUMBER default 0")
     private double balance;
 
-    @OneToMany(mappedBy = "account")
-    private List<Client> clients;
+    @ManyToOne
+    @JoinColumn(foreignKey = @ForeignKey(name = "client_fk"),
+            name = "client_id")
+    private Client client;
 
     public long getNumber() {
         return number;
@@ -45,5 +46,22 @@ public class Account {
 
     public void setBalance(double balance) {
         this.balance = balance;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "number=" + number +
+                ", balance=" + balance +
+                ", client=" + client +
+                '}';
     }
 }

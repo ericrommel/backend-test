@@ -2,6 +2,7 @@ package com.erommel.repository;
 
 import com.erommel.model.Account;
 import com.erommel.model.Client;
+import com.erommel.model.Transaction;
 import org.h2.Driver;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +17,7 @@ public final class HibernateConfiguration {
         Configuration config = new Configuration();
         config.addAnnotatedClass(Client.class)
                 .addAnnotatedClass(Account.class)
+                .addAnnotatedClass(Transaction.class)
                 .setProperty("hibernate.dialect", H2Dialect.class.getName())
                 .setProperty("hibernate.connection.driver_class", Driver.class.getName())
                 .setProperty("hibernate.connection.url", "jdbc:h2:mem:am_db")

@@ -41,11 +41,16 @@ public class ClientService {
                 .isPresent();
     }
 
-    public Client findById(Long id) {
+    public Client findById(Long id) throws EntityNotFoundException {
         Optional<Client> clientOptional = repository.findById(id);
-        String msg = clientOptional.isPresent() ? "Client {} found" : "Client {} not found";
-        LOG.log(Level.INFO, msg, id);
-        return clientOptional.orElseThrow(() -> new EntityNotFoundException("Client with id " + id + " not found"));
+
+        if (clientOptional.isPresent()) {
+            LOG.log(Level.INFO, "Client {0} found", id);
+            return clientOptional.get();
+        }
+
+        LOG.log(Level.INFO, "Client {0} not found", id);
+        throw new EntityNotFoundException("Client with id " + id + " not found");
     }
 
     public List<Client> findAll() {

@@ -40,10 +40,8 @@ public class ClientResource {
         LOG.log(Level.INFO, "Receiving request with id param {}", id);
 
         try {
-
             Client client = service.findById(Long.parseLong(id));
             return Response.ok().entity(client).build();
-
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
@@ -57,10 +55,8 @@ public class ClientResource {
     @Path("/")
     public Response add(Client client) {
         try {
-
             service.save(client);
             return Response.created(new URI("/api/clients/" + client.getId())).build();
-
         } catch (EntityAlreadyExistsException e) {
             return Response.status(Response.Status.CONFLICT).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
