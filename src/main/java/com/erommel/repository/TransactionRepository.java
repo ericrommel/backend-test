@@ -7,9 +7,12 @@ import org.hibernate.query.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TransactionRepository extends Repository<Transaction, Long> {
@@ -17,11 +20,10 @@ public class TransactionRepository extends Repository<Transaction, Long> {
 
     public Optional<List<Transaction>> findByDate(LocalDate date) {
         try(Session session = getSession()) {
-
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.dateTimeTransaction >= :datetime", Transaction.class
             );
-            query.setParameter("datetime", date);
+            query.setParameter("datetime", date.atStartOfDay());
             return Optional.of(query.getResultList());
         } catch (Exception e) {
             LOG.warning("Error to find transactions from date " + date);
@@ -30,14 +32,13 @@ public class TransactionRepository extends Repository<Transaction, Long> {
         return Optional.empty();
     }
 
-    public Optional<Transaction> findByFromAccount(long account) {
+    public Optional<List<Transaction>> findByFromAccount(Long account) {
         try(Session session = getSession()) {
-
             Query<Transaction> query = session.createQuery(
-                    "SELECT t FROM Transaction t WHERE t.fromAccount = :fromAccount", Transaction.class
+                    "SELECT t FROM Transaction t WHERE t.fromAccount.number = :number", Transaction.class
             );
-            query.setParameter("fromAccount", account);
-            return Optional.of(query.getSingleResult());
+            query.setParameter("number", account);
+            return Optional.of(query.getResultList());
 
         } catch (Exception e) {
             LOG.warning("Error to find transaction by account " + account);
@@ -46,14 +47,14 @@ public class TransactionRepository extends Repository<Transaction, Long> {
         return Optional.empty();
     }
 
-    public Optional<Transaction> findByToAccount(long account) {
+    public Optional<List<Transaction>> findByToAccount(long account) {
         try(Session session = getSession()) {
 
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.toAccount = :toAccount", Transaction.class
             );
             query.setParameter("toAccount", account);
-            return Optional.of(query.getSingleResult());
+            return Optional.of(query.getResultList());
 
         } catch (Exception e) {
             LOG.warning("Error to find transaction by account " + account);
@@ -61,4 +62,27 @@ public class TransactionRepository extends Repository<Transaction, Long> {
 
         return Optional.empty();
     }
+
+    @Override
+    public Serializable save(Transaction transaction) {
+        Session session = getSession();
+        try {
+
+            session.beginTransaction();
+            Serializable id = session.save(transaction);
+            session.update(transaction.getToAccount());
+            session.update(transaction.getFromAccount());
+            session.getTransaction().commit();
+
+            return id;
+
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            LOG.log(Level.WARNING, "Error on save " + transaction.toString(), e);
+        } finally {
+            session.close();
+        }
+        return null;
+    }
+
 }

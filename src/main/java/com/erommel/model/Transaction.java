@@ -23,18 +23,15 @@ public class Transaction {
     @JsonProperty("from")
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "from_account_fk"),
-            name = "account_number")
-//    @Column(unique = false, nullable = false)
+            name = "f_account_number")
     private Account fromAccount;
 
     @JsonProperty("to")
     @OneToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "to_account_fk"),
-            name = "account_number", insertable=false, updatable=false)
-//    @Column(unique = false, nullable = false)
+            name = "t_account_number", insertable=false, updatable=false)
     private Account toAccount;
 
-    @JsonProperty("dateTimeTransaction")
     @Column(unique = false, nullable = false)
     private LocalDateTime dateTimeTransaction;
 
@@ -110,11 +107,9 @@ public class Transaction {
     @Override
     public String toString() {
         return "Transaction{" +
-                "id='" + id + '\'' +
-                ", from='" + fromAccount + '\'' +
-                ", to='" + toAccount + '\'' +
+                ", from='" + fromAccount.getNumber() + '\'' +
+                ", to='" + toAccount.getNumber() + '\'' +
                 ", amount='" + amount + '\'' +
-                ", datetime='" + dateTimeTransaction + '\'' +
                 '}';
     }
 }

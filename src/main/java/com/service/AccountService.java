@@ -25,36 +25,6 @@ public class AccountService {
         this.clientService = new ClientService();
     }
 
-    public int updateFromAccount(AccountRequest accountRequest) throws BadRequestException {
-        if (accountRequest == null)
-            throw new EntityNotValidException("Request cannot be null");
-        if (accountRequest.getNumber() == null || accountRequest.getNumber() <= 0)
-            throw new EntityNotValidException("A valid Account number is required");
-
-        int updateRepo = repository.updateFromAccount(accountRequest.getNumber(), accountRequest.getBalance());
-        if (updateRepo <= 0) {
-            throw new RuntimeException("fromAccount " + accountRequest.getNumber() + " not update");
-        }
-
-        LOG.log(Level.INFO, "{0} updated", updateRepo);
-        return updateRepo;
-    }
-
-    public int updateToAccount(AccountRequest accountRequest) throws BadRequestException {
-        if (accountRequest == null)
-            throw new EntityNotValidException("Request cannot be null");
-        if (accountRequest.getNumber() == null || accountRequest.getNumber() <= 0)
-            throw new EntityNotValidException("A valid Account number is required");
-
-        int updateRepo = repository.updateToAccount(accountRequest.getNumber(), accountRequest.getBalance());
-        if (updateRepo <= 0) {
-            throw new RuntimeException("toAccount " + accountRequest.getNumber() + " not update");
-        }
-
-        LOG.log(Level.INFO, "{0} updated", updateRepo);
-        return updateRepo;
-    }
-
     public Account save(AccountRequest accountRequest) throws BadRequestException {
         if (accountRequest == null)
             throw new EntityNotValidException("Request cannot be null");
@@ -109,4 +79,22 @@ public class AccountService {
 
         repository.remove(account);
     }
+
+    public void updateAccount(Account accountRequest) throws BadRequestException {
+        validateAccount(accountRequest);
+
+        if (repository.update(accountRequest)) {
+            throw new RuntimeException("fromAccount " + accountRequest.getNumber() + " not update");
+        }
+
+        LOG.log(Level.INFO, "{0} updated", accountRequest.getNumber());
+    }
+
+    private void validateAccount(Account accountRequest) {
+        if (accountRequest == null)
+            throw new EntityNotValidException("Request cannot be null");
+        if (accountRequest.getNumber() <= 0)
+            throw new EntityNotValidException("A valid Account number is required");
+    }
+
 }

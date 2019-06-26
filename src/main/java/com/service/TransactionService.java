@@ -28,6 +28,31 @@ public class TransactionService {
     }
 
     public Transaction save(TransactionRequest transactionRequest) throws BadRequestException {
+        validateTransaction(transactionRequest);
+
+        Account fromAccount = accountService.findByNumber(transactionRequest.getFromAccount());
+        Account toAccount = accountService.findByNumber(transactionRequest.getToAccount());
+
+        double discountBalance = fromAccount.getBalance() - transactionRequest.getAmount();
+        double additionBalance = toAccount.getBalance() + transactionRequest.getAmount();
+        fromAccount.setBalance(discountBalance);
+        toAccount.setBalance(additionBalance);
+
+        Transaction transaction = new Transaction();
+        transaction.setFromAccount(fromAccount);
+        transaction.setToAccount(toAccount);
+        transaction.setAmount(transactionRequest.getAmount());
+        transaction.setDateTimeTransaction(LocalDateTime.now());
+
+        if (repository.save(transaction) == null) {
+            throw new RuntimeException(transaction + " not saved");
+        }
+
+        LOG.log(Level.INFO, "{0} saved", transaction);
+        return transaction;
+    }
+
+    private void validateTransaction(TransactionRequest transactionRequest) {
         if (transactionRequest == null) {
             throw new EntityNotValidException("Request cannot be null");
         }
@@ -43,29 +68,6 @@ public class TransactionService {
         if (transactionRequest.getAmount() <= 0) {
             throw new EntityNotValidException("Transactions with amount equal or less than 0 are not permitted");
         }
-
-        Account fromAccount = accountService.findByNumber(transactionRequest.getFromAccount());
-        Account toAccount = accountService.findByNumber(transactionRequest.getToAccount());
-
-        Transaction transaction = new Transaction();
-        AccountRequest accountRequest = new AccountRequest();
-
-        transaction.setFromAccount(fromAccount);
-        transaction.setToAccount(toAccount);
-        accountRequest.setNumber(transactionRequest.getFromAccount());
-        accountRequest.setNumber(transactionRequest.getFromAccount());
-        /* Falhando aqui */
-        accountService.updateFromAccount(accountRequest);
-        accountService.updateToAccount(accountRequest);
-        transaction.setAmount(transactionRequest.getAmount());
-        transaction.setDateTimeTransaction(LocalDateTime.now());
-
-        if (repository.save(transaction) == null) {
-            throw new RuntimeException("Transaction " + transaction.getId() + " not saved");
-        }
-
-        LOG.log(Level.INFO, "{0} saved", transaction);
-        return transaction;
     }
 
     private boolean exists(Account account) {
@@ -78,23 +80,21 @@ public class TransactionService {
         Optional<List<Transaction>> transaction = repository.findByDate(localDate);
 
         if (transaction.isPresent()) {
-            LOG.log(Level.INFO, "Transaction {0} found", localDate);
+            LOG.log(Level.INFO, "Transactions were found. {0}", transaction.get());
             return transaction.get();
         }
 
-        LOG.log(Level.INFO, "Transactions {0} not found", localDate);
-        throw new EntityNotFoundException("Account with id " + localDate + " not found");
+        throw new EntityNotFoundException("Transactions from " + localDate + " not found");
     }
 
-    public Transaction findByFromAccount(Long fromAccount) {
-        Optional<Transaction> transaction = repository.findByFromAccount(fromAccount);
+    public List<Transaction> findByFromAccount(Long fromAccount) {
+        Optional<List<Transaction>> transaction = repository.findByFromAccount(fromAccount);
 
         if (transaction.isPresent()) {
-            LOG.log(Level.INFO, "Transaction {0} found", fromAccount);
+            LOG.log(Level.INFO, "Transactions were found {0}", transaction.get());
             return transaction.get();
         }
 
-        LOG.log(Level.INFO, "Transaction {0} not found", fromAccount);
         throw new EntityNotFoundException("Transaction with id " + fromAccount + " not found");
     }
 
@@ -111,8 +111,8 @@ public class TransactionService {
     }
 
     public List<Transaction> findAll() {
-        List<Transaction> transactionss = repository.findAll();
-        LOG.log(Level.INFO, "Total of transactions found: {0}", transactionss.size());
-        return transactionss;
+        List<Transaction> transactions = repository.findAll();
+        LOG.log(Level.INFO, "Total of transactions found: {0}", transactions.size());
+        return transactions;
     }
 }

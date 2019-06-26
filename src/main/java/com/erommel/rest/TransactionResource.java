@@ -2,15 +2,11 @@ package com.erommel.rest;
 
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
-import com.erommel.model.Account;
-import com.erommel.model.Client;
 import com.erommel.model.Transaction;
-import com.erommel.rest.request.AccountRequest;
 import com.erommel.rest.request.TransactionRequest;
 import com.erommel.rest.response.CollectionResponse;
 import com.erommel.rest.response.ErrorResponse;
 import com.service.TransactionService;
-import javafx.util.converter.LocalDateStringConverter;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -18,6 +14,8 @@ import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +57,7 @@ public class TransactionResource {
                 .build();
     }
 
-    @Path("/transfers/transfer/{transactionId}")
+    @Path("/transfers/{transactionId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response get(@PathParam("transactionId") Long transactionId) {
@@ -80,9 +78,11 @@ public class TransactionResource {
     public Response get(@PathParam("dateTimeTransaction") String dateTimeTransaction) {
         LocalDate date = null;
         try {
-            date = LocalDate.parse(dateTimeTransaction);
+            date = LocalDate.parse(dateTimeTransaction, DateTimeFormatter.ISO_LOCAL_DATE);
+        } catch (DateTimeParseException e) {
+            LOG.log(Level.WARNING, "Conversion of date " + dateTimeTransaction + " using ISO date time failed.", e);
         } catch(Exception e) {
-            e.getMessage();
+            LOG.log(Level.WARNING, "Unexpected exception. ", e);
         }
 
         try {
@@ -91,7 +91,7 @@ public class TransactionResource {
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "unexpected", e);
+            LOG.log(Level.WARNING, "Unexpected exception. ", e);
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
     }
@@ -101,12 +101,12 @@ public class TransactionResource {
     @GET
     public Response getFromAccount(@PathParam("fromAccount") Long fromAccount) {
         try {
-            Transaction transaction = service.findByFromAccount(fromAccount);
+            List<Transaction> transaction = service.findByFromAccount(fromAccount);
             return Response.ok(transaction).build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "unexpected", e);
+            LOG.log(Level.WARNING, "Unexpected exception. ", e);
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
     }

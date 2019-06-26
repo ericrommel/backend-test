@@ -1,10 +1,8 @@
 package com.erommel.rest;
 
-import com.erommel.exception.EntityAlreadyExistsException;
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
 import com.erommel.model.Account;
-import com.erommel.model.Client;
 import com.erommel.rest.request.AccountRequest;
 import com.erommel.rest.response.CollectionResponse;
 import com.erommel.rest.response.ErrorResponse;
@@ -84,5 +82,4 @@ public class AccountResource {
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
     }
-
 }
