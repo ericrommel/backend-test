@@ -1,1 +1,1 @@
-web: java -jar cfv build/libs/account-management-1.0-SNAPSHOT.war
+web: deploy account-management/webapps/ --app backend-test
