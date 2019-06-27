@@ -39,7 +39,7 @@ public class AccountResourceTest extends JerseyTest {
     public void testAddAccount_ClientNotFound() {
         Response response = target("accounts").request()
                 .post(Entity.json("{\n" +
-                        "\t\"client_id\": 4,\n" +
+                        "\t\"client_id\": 1000000,\n" +
                         "\t\"balance\": 100\n" +
                         "}"));
 
@@ -52,7 +52,7 @@ public class AccountResourceTest extends JerseyTest {
         String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Client with id 4 not found\"}",
+                "{\"message\":\"Client with id 1000000 not found\"}",
                 content
         );
     }
