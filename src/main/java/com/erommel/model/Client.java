@@ -3,12 +3,15 @@ package com.erommel.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Table(name = "clients")
+@ApiModel( value = "Client", description = "Client resource representation" )
 public class Client {
 
     @Id
@@ -18,10 +21,12 @@ public class Client {
             allocationSize = 1)
     private long id;
 
+    @ApiModelProperty( value = "Client's full name", required = true )
     private String name;
 
     @JsonProperty("document_id")
     @Column(unique = true, nullable = false)
+    @ApiModelProperty( value = "Client's document id", required = true )
     private String documentId;
 
     @JsonIgnore

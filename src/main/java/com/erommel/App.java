@@ -22,27 +22,27 @@ public class App extends ResourceConfig {
         property(ServerProperties.TRACING, "ALL");
         property(ServerProperties.TRACING_THRESHOLD, "TRACE");
 
-        Client client1 = new Client();
-        client1.setName("Jurema Silva");
-        client1.setDocumentId("1234567");
-        Client client2 = new Client();
-        client2.setName("Fulano Sicrano");
-        client2.setDocumentId("123456");
-
-        ClientRepository clientRepository = new ClientRepository();
-        clientRepository.save(client1);
-        clientRepository.save(client2);
-
-        Account account1 = new Account();
-        account1.setClient(client1);
-        account1.setBalance(50.0);
-        Account account2 = new Account();
-        account2.setClient(client1);
-        account2.setBalance(70.0);
-
-        AccountRepository accountRepository = new AccountRepository();
-        accountRepository.save(account1);
-        accountRepository.save(account2);
+//        Client client1 = new Client();
+//        client1.setName("Jurema Silva");
+//        client1.setDocumentId("1234567");
+//        Client client2 = new Client();
+//        client2.setName("Fulano Sicrano");
+//        client2.setDocumentId("123456");
+//
+//        ClientRepository clientRepository = new ClientRepository();
+//        clientRepository.save(client1);
+//        clientRepository.save(client2);
+//
+//        Account account1 = new Account();
+//        account1.setClient(client1);
+//        account1.setBalance(50.0);
+//        Account account2 = new Account();
+//        account2.setClient(client1);
+//        account2.setBalance(70.0);
+//
+//        AccountRepository accountRepository = new AccountRepository();
+//        accountRepository.save(account1);
+//        accountRepository.save(account2);
 
     }
 }

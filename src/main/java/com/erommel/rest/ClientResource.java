@@ -6,6 +6,7 @@ import com.erommel.model.Client;
 import com.erommel.rest.response.CollectionResponse;
 import com.erommel.rest.response.ErrorResponse;
 import com.service.ClientService;
+import io.swagger.annotations.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -16,12 +17,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Path("/clients")
+@Api(value = "/clients", description = "Manage clients. As these data are sensible, the DELETE operation is not allowed.")
 public class ClientResource {
     private static final Logger LOG = Logger.getLogger(ClientResource.class.getName());
 
     private ClientService service = new ClientService();
 
     @GET
+    @ApiOperation(value = "Returns all clients registered",
+            response = Client.class,
+            responseContainer = "List")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getClients() {
         LOG.log(Level.INFO, "Receiving request without param. Return all clients");
@@ -33,9 +38,17 @@ public class ClientResource {
     }
 
     @GET
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID supplied",
+                    responseHeaders = @ResponseHeader(name = "X-Rack-Cache",
+                    description = "Explains whether or not a cache was used",
+                    response = Boolean.class)),
+            @ApiResponse(code = 404, message = "Client not found") })
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
-    public Response get(@PathParam("id") String id) {
+    public Response get(
+            @ApiParam( value = "Page to fetch", required = true )
+            @PathParam("id") String id) {
         LOG.log(Level.INFO, "Receiving request with id param {}", id);
 
         try {
