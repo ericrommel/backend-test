@@ -25,7 +25,6 @@ public class AccountResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
     public Response getAccounts() {
         LOG.log(Level.INFO, "Receiving request without param. Return all accounts");
         List<Account> accountList = service.findAll();
@@ -50,7 +49,6 @@ public class AccountResource {
         }
     }
 
-    @Path("/")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
@@ -60,21 +58,6 @@ public class AccountResource {
             return Response.created(new URI("/api/accounts/" + account.getNumber())).build();
         } catch (EntityNotValidException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(e.getMessage())).build();
-        } catch (EntityNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
-        } catch (Exception e) {
-            LOG.log(Level.WARNING, "unexpected", e);
-            return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
-        }
-    }
-
-    @Path("/{accountNumber}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @DELETE
-    public Response remove(@PathParam("accountNumber") Long accountNumber) {
-        try {
-            service.delete(accountNumber);
-            return Response.noContent().build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {

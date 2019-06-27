@@ -2,6 +2,7 @@ package com.erommel.rest;
 
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
+import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Transaction;
 import com.erommel.rest.request.TransactionRequest;
 import com.erommel.rest.response.CollectionResponse;
@@ -13,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -35,7 +35,7 @@ public class TransactionResource {
         try {
             Transaction transaction = service.save(transactionRequest);
             return Response.created(new URI("/api/transactions/" + transaction.getId())).build();
-        } catch (EntityNotValidException e) {
+        } catch (EntityNotValidException | TransactionNotValidException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(e.getMessage())).build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();

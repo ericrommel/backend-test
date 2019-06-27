@@ -2,6 +2,7 @@ package com.service;
 
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
+import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Account;
 import com.erommel.model.Transaction;
 import com.erommel.repository.TransactionRepository;
@@ -34,6 +35,9 @@ public class TransactionService {
         Account toAccount = accountService.findByNumber(transactionRequest.getToAccount());
 
         double discountBalance = fromAccount.getBalance() - transactionRequest.getAmount();
+        if (discountBalance <= 0) {
+            throw new TransactionNotValidException("Transaction rejected. From account does not have money enough");
+        }
         double additionBalance = toAccount.getBalance() + transactionRequest.getAmount();
         fromAccount.setBalance(discountBalance);
         toAccount.setBalance(additionBalance);
@@ -63,10 +67,10 @@ public class TransactionService {
             throw new EntityNotValidException("A destination account number is required");
         }
         if (transactionRequest.getFromAccount().equals(transactionRequest.getToAccount())) {
-            throw new EntityNotValidException("The origin and destination account numbers are the same");
+            throw new TransactionNotValidException("The origin and destination account numbers are the same");
         }
         if (transactionRequest.getAmount() <= 0) {
-            throw new EntityNotValidException("Transactions with amount equal or less than 0 are not permitted");
+            throw new TransactionNotValidException("Transactions with amount equal or less than 0 are not permitted");
         }
     }
 

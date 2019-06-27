@@ -23,7 +23,6 @@ public class ClientResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
     public Response getClients() {
         LOG.log(Level.INFO, "Receiving request without param. Return all clients");
         List<Client> clientList = service.findAll();
@@ -52,7 +51,6 @@ public class ClientResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
     public Response add(Client client) {
         try {
             service.save(client);

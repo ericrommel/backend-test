@@ -5,8 +5,6 @@ import org.hibernate.Session;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.transaction.Status;
-import javax.transaction.Transaction;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
