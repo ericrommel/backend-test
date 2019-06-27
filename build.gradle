@@ -30,3 +30,5 @@ gretty {
     servletContainer 'jetty9.4'
     contextPath = '/api'
 }
+
+task stage(dependsOn: ['build', 'clean'])
