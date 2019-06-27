@@ -45,9 +45,8 @@ public class TransactionRepository extends Repository<Transaction, Long> {
 
     public Optional<List<Transaction>> findByToAccount(long account) {
         try(Session session = getSession()) {
-
             Query<Transaction> query = session.createQuery(
-                    "SELECT t FROM Transaction t WHERE t.toAccount = :toAccount", Transaction.class
+                    "SELECT t FROM Transaction t WHERE t.toAccount.number = :toAccount", Transaction.class
             );
             query.setParameter("toAccount", account);
             return Optional.of(query.getResultList());
@@ -63,11 +62,10 @@ public class TransactionRepository extends Repository<Transaction, Long> {
     public Serializable save(Transaction transaction) {
         Session session = getSession();
         try {
-
             session.beginTransaction();
-            Serializable id = session.save(transaction);
             session.update(transaction.getToAccount());
             session.update(transaction.getFromAccount());
+            Serializable id = session.save(transaction);
             session.getTransaction().commit();
 
             return id;

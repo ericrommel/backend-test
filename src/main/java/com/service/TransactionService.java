@@ -42,6 +42,9 @@ public class TransactionService {
         fromAccount.setBalance(discountBalance);
         toAccount.setBalance(additionBalance);
 
+        LOG.log(Level.INFO, "From: {0}", fromAccount);
+        LOG.log(Level.INFO, "To: {0}", toAccount);
+
         Transaction transaction = new Transaction();
         transaction.setFromAccount(fromAccount);
         transaction.setToAccount(toAccount);

@@ -21,15 +21,15 @@ public class Transaction {
     private double amount;
 
     @JsonProperty("from")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "from_account_fk"),
-            name = "f_account_number")
+            name = "f_account_number", updatable = false)
     private Account fromAccount;
 
     @JsonProperty("to")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(foreignKey = @ForeignKey(name = "to_account_fk"),
-            name = "t_account_number", insertable=false, updatable=false)
+            name = "t_account_number", updatable = false)
     private Account toAccount;
 
     @Column(unique = false, nullable = false)
