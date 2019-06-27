@@ -14,7 +14,7 @@ public class Transaction {
     @SequenceGenerator(name = "seqTransaction",
             sequenceName = "seq_transaction",
             allocationSize = 1)
-    private long id;
+    private long transaction_id;
 
     @JsonProperty("amount")
     @Column(unique = false, nullable = false)
@@ -46,12 +46,12 @@ public class Transaction {
         this.dateTimeTransaction = LocalDateTime.now();
     }
 
-    public long getId() {
-        return id;
+    public long getTransaction_id() {
+        return transaction_id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setTransaction_id(long transaction_id) {
+        this.transaction_id = transaction_id;
     }
 
     public double getAmount() {
@@ -93,13 +93,13 @@ public class Transaction {
 //
 //        Transaction transaction = (Transaction) o;
 //
-//        if (id != transaction.id) return false;
+//        if (transaction_id != transaction.transaction_id) return false;
 //        return documentId.equals(transaction documentId);
 //    }
 //
 //    @Override
 //    public int hashCode() {
-//        int result = (int) (id ^ (id >>> 32));
+//        int result = (int) (transaction_id ^ (transaction_id >>> 32));
 //        result = 31 * result + documentId.hashCode();
 //        return result;
 //    }

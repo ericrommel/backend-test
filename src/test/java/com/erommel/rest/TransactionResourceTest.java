@@ -3,6 +3,8 @@ package com.erommel.rest;
 import com.erommel.rest.request.AccountRequest;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -110,7 +113,7 @@ public class TransactionResourceTest extends JerseyTest {
                 .post(Entity.json("{\n" +
                         "\t\"from\": 1,\n" +
                         "\t\"to\": 2,\n" +
-                        "\t\"amount\": 0\n" +
+                        "\t\"amount\": -10\n" +
                         "}"));
 
         assertEquals(
@@ -133,7 +136,7 @@ public class TransactionResourceTest extends JerseyTest {
                 .post(Entity.json("{\n" +
                         "\t\"from\": 1,\n" +
                         "\t\"to\": 2,\n" +
-                        "\t\"amount\": -10\n" +
+                        "\t\"amount\": 0\n" +
                         "}"));
 
         assertEquals(
@@ -221,7 +224,16 @@ public class TransactionResourceTest extends JerseyTest {
 
     @Test
     public void testGetTransfers() {
-        Response response = target("transactions/transfers").request().get();
+        Response response;
+
+        response = target("transactions/transfers").request()
+                .post(Entity.json("{\n" +
+                        "\t\"from\": 1,\n" +
+                        "\t\"to\": 2,\n" +
+                        "\t\"amount\": 3\n" +
+                        "}"));
+
+        response = target("transactions/transfers").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -229,21 +241,33 @@ public class TransactionResourceTest extends JerseyTest {
                 response.getStatus()
         );
 
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
-        );
-
         assertEquals(
                 "Http Content-Type should be: ",
                 MediaType.APPLICATION_JSON,
                 response.getHeaderString(HttpHeaders.CONTENT_TYPE)
+        );
+
+        String content = response.readEntity(String.class);
+        JSONObject jsonObject = new JSONObject(content);
+        JSONArray result = (JSONArray) jsonObject.get("result");
+        assertFalse(
+                "Should have at least 1 transaction made",
+                result.isEmpty()
         );
     }
 
     @Test
     public void testGetTransfer_Ok() {
-        Response response = target("transactions/transfers/1").request().get();
+        Response response;
+
+        response = target("transactions/transfers").request()
+                .post(Entity.json("{\n" +
+                        "\t\"from\": 1,\n" +
+                        "\t\"to\": 2,\n" +
+                        "\t\"amount\": 3\n" +
+                        "}"));
+
+        response = target("transactions/transfers/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -251,15 +275,18 @@ public class TransactionResourceTest extends JerseyTest {
                 response.getStatus()
         );
 
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
-        );
-
         assertEquals(
                 "Http Content-Type should be: ",
                 MediaType.APPLICATION_JSON,
                 response.getHeaderString(HttpHeaders.CONTENT_TYPE)
+        );
+
+        String content = response.readEntity(String.class);
+        JSONObject jsonObject = new JSONObject(content);
+        assertEquals(
+                "Content of response is: ",
+                1,
+                jsonObject.get("transaction_id")
         );
     }
 
@@ -271,11 +298,6 @@ public class TransactionResourceTest extends JerseyTest {
                 "Http Response should return status 404: ",
                 Response.Status.NOT_FOUND.getStatusCode(),
                 response.getStatus()
-        );
-
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
         );
 
         assertEquals(
@@ -294,7 +316,16 @@ public class TransactionResourceTest extends JerseyTest {
 
     @Test
     public void testGetTransfer_FromAccount() {
-        Response response = target("transactions/transfers/account/1").request().get();
+        Response response;
+
+        response = target("transactions/transfers").request()
+                .post(Entity.json("{\n" +
+                        "\t\"from\": 1,\n" +
+                        "\t\"to\": 2,\n" +
+                        "\t\"amount\": 3\n" +
+                        "}"));
+
+        response = target("transactions/transfers/account/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -302,21 +333,32 @@ public class TransactionResourceTest extends JerseyTest {
                 response.getStatus()
         );
 
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
-        );
-
         assertEquals(
                 "Http Content-Type should be: ",
                 MediaType.APPLICATION_JSON,
                 response.getHeaderString(HttpHeaders.CONTENT_TYPE)
+        );
+
+        String content = response.readEntity(String.class);
+        JSONArray result = new JSONArray(content);
+        assertFalse(
+                "Should have at least 1 transaction made from account 1",
+                result.isEmpty()
         );
     }
 
     @Test
     public void testGetTransfer_FromDate() {
-        Response response = target("transactions/transfers/from/" + LocalDate.now()).request().get();
+        Response response;
+
+        response = target("transactions/transfers").request()
+                .post(Entity.json("{\n" +
+                        "\t\"from\": 1,\n" +
+                        "\t\"to\": 2,\n" +
+                        "\t\"amount\": 3\n" +
+                        "}"));
+
+        response = target("transactions/transfers/from/" + LocalDate.now()).request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -324,15 +366,17 @@ public class TransactionResourceTest extends JerseyTest {
                 response.getStatus()
         );
 
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
-        );
-
         assertEquals(
                 "Http Content-Type should be: ",
                 MediaType.APPLICATION_JSON,
                 response.getHeaderString(HttpHeaders.CONTENT_TYPE)
+        );
+
+        String content = response.readEntity(String.class);
+        JSONArray result = new JSONArray(content);
+        assertFalse(
+                "Should have at least 1 transaction made at " + LocalDate.now(),
+                result.isEmpty()
         );
     }
 }

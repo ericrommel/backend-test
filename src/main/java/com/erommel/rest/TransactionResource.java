@@ -34,7 +34,7 @@ public class TransactionResource {
     public Response add(TransactionRequest transactionRequest) {
         try {
             Transaction transaction = service.save(transactionRequest);
-            return Response.created(new URI("/api/transactions/" + transaction.getId())).build();
+            return Response.created(new URI("/api/transactions/" + transaction.getTransaction_id())).build();
         } catch (EntityNotValidException | TransactionNotValidException e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(e.getMessage())).build();
         } catch (EntityNotFoundException e) {

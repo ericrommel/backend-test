@@ -2,6 +2,8 @@ package com.erommel.rest;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -79,17 +81,20 @@ public class AccountResourceTest extends JerseyTest {
 
     @Test
     public void testGetAccounts() {
-        Response response = target("accounts").request().get();
+        Response response;
+
+        response = target("accounts/").request()
+                .post(Entity.json("{\n" +
+                        "\t\"client_id\": 1,\n" +
+                        "\t\"balance\": 100\n" +
+                        "}"));
+
+        response = target("accounts").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
                 Response.Status.OK.getStatusCode(),
                 response.getStatus()
-        );
-
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
         );
 
         assertEquals(
@@ -99,26 +104,30 @@ public class AccountResourceTest extends JerseyTest {
         );
 
         String content = response.readEntity(String.class);
-        assertEquals(
-                "Content of response is: ",
-                "{\"result\":[{\"number\":1,\"currency\":\"HUF\",\"balance\":100.0,\"client\":{\"id\":1,\"name\":\"Amanda Bertullite\",\"document_id\":\"23485671\"}}]}",
-                content
+        JSONObject jsonObject = new JSONObject(content);
+        JSONArray result = (JSONArray) jsonObject.get("result");
+        assertFalse(
+                "Should have at least 1 account registered",
+                result.isEmpty()
         );
     }
 
     @Test
     public void testGetAccount() {
-        Response response = target("accounts/1").request().get();
+        Response response;
+
+        response = target("accounts/").request()
+                .post(Entity.json("{\n" +
+                        "\t\"client_id\": 1,\n" +
+                        "\t\"balance\": 100\n" +
+                        "}"));
+
+        response = target("accounts/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
                 Response.Status.OK.getStatusCode(),
                 response.getStatus()
-        );
-
-        assertNotNull(
-                "Http Response should return list",
-                response.getEntity()
         );
 
         assertEquals(
@@ -128,16 +137,17 @@ public class AccountResourceTest extends JerseyTest {
         );
 
         String content = response.readEntity(String.class);
+        JSONObject jsonObject = new JSONObject(content);
         assertEquals(
                 "Content of response is: ",
-                "{\"number\":1,\"currency\":\"HUF\",\"balance\":100.0,\"client\":{\"id\":1,\"name\":\"Amanda Bertullite\",\"document_id\":\"23485671\"}}",
-                content
+                1,
+                jsonObject.get("number")
         );
     }
 
     @Test
     public void testGetAccount_NotExist() {
-        Response response = target("accounts/4").request().get();
+        Response response = target("accounts/100000").request().get();
 
         assertEquals(
                 "Http Response should return status 404: ",
@@ -148,7 +158,7 @@ public class AccountResourceTest extends JerseyTest {
         String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Account with id 4 not found\"}",
+                "{\"message\":\"Account with id 100000 not found\"}",
                 content
         );
     }
