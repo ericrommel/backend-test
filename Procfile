@@ -1,1 +1,1 @@
-web: java -jar build/libs/account-management-1.0-SNAPSHOT.war
+web: java -jar cfv build/libs/account-management-1.0-SNAPSHOT.war
