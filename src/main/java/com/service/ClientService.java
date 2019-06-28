@@ -2,6 +2,7 @@ package com.service;
 
 
 import com.erommel.exception.EntityAlreadyExistsException;
+import com.erommel.exception.ClientHasAccountException;
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.model.Client;
 import com.erommel.repository.ClientRepository;
@@ -48,6 +49,21 @@ public class ClientService {
             LOG.log(Level.INFO, "Client {0} not updated", client);
             throw new RuntimeException("Client " + client.getName() + " not updated");
         }
+    }
+
+    public void delete(Client client) {
+        Objects.requireNonNull(client);
+        if (client.getAccounts().size() > 0) {
+            throw new ClientHasAccountException("{0} has one or more accounts registered.");
+        }
+        if(!exists(client))
+            throw new EntityNotFoundException(client + " not found");
+
+        if (!repository.remove(client)) {
+            throw new RuntimeException("Client " + client.getName() + " not deleted");
+        }
+
+        LOG.log(Level.INFO, "{0} has been saved", client);
     }
 
     private boolean exists(Long id) {

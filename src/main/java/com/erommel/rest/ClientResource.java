@@ -2,6 +2,7 @@ package com.erommel.rest;
 
 import com.erommel.exception.EntityAlreadyExistsException;
 import com.erommel.exception.EntityNotFoundException;
+import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Client;
 import com.erommel.rest.response.CollectionResponse;
 import com.erommel.rest.response.ErrorResponse;
@@ -74,6 +75,22 @@ public class ClientResource {
             return Response.ok(client).build();
         } catch (EntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
+        } catch (Exception e) {
+            return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}")
+    public Response delete(@PathParam("id") Long id) {
+        try {
+            Client client = service.findById(id);
+            System.out.println(client.getAccounts());
+            service.delete(client);
+            return Response.ok().build();
+        } catch (TransactionNotValidException e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
