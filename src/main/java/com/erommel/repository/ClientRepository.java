@@ -24,4 +24,17 @@ public class ClientRepository extends Repository<Client, Long> {
 
         return Optional.empty();
     }
+    public Optional<Client> findById(Long id) {
+        try(Session session = getSession()) {
+
+            Query<Client> query = session.createQuery("SELECT c FROM Client c WHERE c.id = :id", Client.class);
+            query.setParameter("id", id);
+            return Optional.of(query.getSingleResult());
+
+        } catch (Exception e) {
+            LOG.warning("Error to find client id " + id);
+        }
+
+        return Optional.empty();
+    }
 }

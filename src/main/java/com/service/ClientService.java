@@ -37,12 +37,23 @@ public class ClientService {
 
     public void update(Client client) {
         Objects.requireNonNull(client);
+        if (!exists(client.getId())) {
+            LOG.log(Level.INFO, "Client {0} not found", client);
+            throw new EntityNotFoundException("Client " + client.getId() + " not found");
+        }
+
         if (repository.update(client)) {
             LOG.log(Level.INFO, "{0} has been updated", client);
         } else {
             LOG.log(Level.INFO, "Client {0} not updated", client);
             throw new RuntimeException("Client " + client.getName() + " not updated");
         }
+    }
+
+    private boolean exists(Long id) {
+        return repository
+                .findById(id)
+                .isPresent();
     }
 
     private boolean exists(Client client) {

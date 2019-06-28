@@ -72,8 +72,8 @@ public class ClientResource {
             client.setId(id);
             service.update(client);
             return Response.ok(client).build();
-        } catch (EntityAlreadyExistsException e) {
-            return Response.status(Response.Status.CONFLICT).entity(new ErrorResponse(e.getMessage())).build();
+        } catch (EntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
