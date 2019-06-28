@@ -59,12 +59,10 @@ public abstract class Repository<T, ID extends Serializable> {
     public boolean remove(T element) {
         Session session = getSession();
         try {
-
             session.beginTransaction();
             session.remove(element);
             session.getTransaction().commit();
             return true;
-
         } catch (Exception e) {
             session.getTransaction().rollback();
             throw new RuntimeException("Error on remove " + element.toString(), e);
@@ -73,21 +71,18 @@ public abstract class Repository<T, ID extends Serializable> {
         }
     }
     public List<T> findAll() {
-        try(Session session = getSession()) {
-
+        try (Session session = getSession()) {
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<T> query = criteriaBuilder.createQuery(clazz);
             Root<T> from = query.from(clazz);
             query.select(from);
             return session.createQuery(query).getResultList();
-
         } catch (Exception e) {
             throw new RuntimeException("Error on fetch all " + clazz.getSimpleName());
         }
     }
     public Optional<T> findById(ID id) {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
 
             return Optional.of(session.find(clazz, id));
 

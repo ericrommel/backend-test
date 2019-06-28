@@ -24,5 +24,4 @@ public class ClientRepository extends Repository<Client, Long> {
 
         return Optional.empty();
     }
-
 }

@@ -1,9 +1,10 @@
 package com.service;
 
+
 import com.erommel.exception.EntityAlreadyExistsException;
 import com.erommel.exception.EntityNotFoundException;
-import com.erommel.repository.ClientRepository;
 import com.erommel.model.Client;
+import com.erommel.repository.ClientRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,8 +32,17 @@ public class ClientService {
             throw new RuntimeException("Client " + client.getName() + " not saved");
         }
 
-        LOG.log(Level.INFO, "{} saved", client);
+        LOG.log(Level.INFO, "{} has been saved", client);
+    }
 
+    public void update(Client client) {
+        Objects.requireNonNull(client);
+        if (repository.update(client)) {
+            LOG.log(Level.INFO, "{0} has been updated", client);
+        } else {
+            LOG.log(Level.INFO, "Client {0} not updated", client);
+            throw new RuntimeException("Client " + client.getName() + " not updated");
+        }
     }
 
     private boolean exists(Client client) {
@@ -45,7 +55,7 @@ public class ClientService {
         Optional<Client> clientOptional = repository.findById(id);
 
         if (clientOptional.isPresent()) {
-            LOG.log(Level.INFO, "Client {0} found", id);
+            LOG.log(Level.INFO, "Client {0} has been found", id);
             return clientOptional.get();
         }
 
@@ -58,5 +68,4 @@ public class ClientService {
         LOG.log(Level.INFO, "Total of clients found: {0}", clients.size());
         return clients;
     }
-
 }
