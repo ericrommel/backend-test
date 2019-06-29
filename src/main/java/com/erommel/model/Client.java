@@ -36,6 +36,12 @@ public class Client {
         this.name = name;
     }
 
+    public Client(long id, String name, String documentId) {
+        this.id = id;
+        this.name = name;
+        this.documentId = documentId;
+    }
+
     public long getId() {
         return id;
     }

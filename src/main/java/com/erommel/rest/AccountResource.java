@@ -39,9 +39,11 @@ public class AccountResource {
     @GET
     public Response get(@PathParam("accountNumber") Long accountNumber) {
         try {
+            LOG.log(Level.INFO, "getting account number {0}", accountNumber);
             Account account = service.findByNumber(accountNumber);
             return Response.ok(account).build();
         } catch (EntityNotFoundException e) {
+            LOG.log(Level.WARNING, "not found", e);
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
             LOG.log(Level.WARNING, "unexpected", e);

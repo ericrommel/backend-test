@@ -6,6 +6,10 @@ public class CollectionResponse {
 
     public Collection result;
 
+    public CollectionResponse() {
+        this(null);
+    }
+
     public CollectionResponse(Collection result) {
         this.result = result;
     }

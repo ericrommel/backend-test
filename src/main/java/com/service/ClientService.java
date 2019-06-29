@@ -33,7 +33,7 @@ public class ClientService {
             throw new RuntimeException("Client " + client.getName() + " not saved");
         }
 
-        LOG.log(Level.INFO, "{} has been saved", client);
+        LOG.log(Level.INFO, "{0} has been saved", client);
     }
 
     public void update(Client client) {
