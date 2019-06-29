@@ -29,7 +29,7 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testAddClient_Ok() {
         Response response = target("clients").request()
-                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
+                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
 
         assertEquals(
                 "Http Response should be 201 ",
@@ -41,7 +41,7 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testAddClient_WithSameDocumentId() {
         Response response = target("clients").request()
-                .post(Entity.json(createClient(2L, "Cauan Liam", "987654")));
+                .post(Entity.json(new Client(2L, "Cauan Liam", "987654")));
 
         assertEquals(
                 "Http Response should be 201",
@@ -50,7 +50,7 @@ public class ClientResourceTest extends JerseyTest {
         );
 
         response = target("clients").request()
-                .post(Entity.json(createClient(3L, "Caio Dantas", "987654")));
+                .post(Entity.json(new Client(3L, "Caio Dantas", "987654")));
 
         assertEquals(
                 "Http Response should be 409",
@@ -62,7 +62,7 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testGetClients() {
         target("clients").request()
-                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
+                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
 
         Response response = target("clients").request().get();
         CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
@@ -100,7 +100,7 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testGetClient_Exist() {
         target("clients").request()
-                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
+                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
 
         Response response = target("clients/1").request().get();
 
@@ -116,9 +116,5 @@ public class ClientResourceTest extends JerseyTest {
                 1,
                 content.getId()
         );
-    }
-
-    private Client createClient(Long id, String name, String documentId) {
-        return new Client(id, name, documentId);
     }
 }
