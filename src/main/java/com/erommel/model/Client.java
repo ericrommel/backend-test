@@ -32,8 +32,9 @@ public class Client {
 
     }
 
-    public Client(String name) {
+    public Client(String name, String documentId) {
         this.name = name;
+        this.documentId = documentId;
     }
 
     public Client(long id, String name, String documentId) {

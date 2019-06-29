@@ -35,18 +35,14 @@ public class AccountResourceTest extends JerseyTest {
     public void init() {
         LOG.info("Init tests for account...");
 
-        Client client = new Client();
-        client.setName("Amanda Bertullite");
-        client.setDocumentId("23485671");
-
         /* Adding a client because this is necessary to add an account */
         target("clients").request()
-                .post(Entity.json(client));
+                .post(Entity.json(new Client("Amanda Bertullite", "23485671")));
     }
 
     @Test
     public void testAddAccount_ClientNotFound() {
-        AccountRequest accountRequest = createAccountRequest(1000000);
+        AccountRequest accountRequest = createAccountRequest(1000000L);
 
         Response response = target("accounts").request()
                 .post(Entity.json(accountRequest));
@@ -68,7 +64,7 @@ public class AccountResourceTest extends JerseyTest {
 
     @Test
     public void testAddAccount_Ok() {
-        AccountRequest accountRequest = createAccountRequest(1);
+        AccountRequest accountRequest = createAccountRequest(1L);
 
         Response response = target("accounts/").request()
                 .post(Entity.json(accountRequest));
@@ -82,7 +78,7 @@ public class AccountResourceTest extends JerseyTest {
 
     @Test
     public void testGetAccounts() {
-        AccountRequest accountRequest = createAccountRequest(1);
+        AccountRequest accountRequest = createAccountRequest(1L);
 
         target("accounts").request().post(Entity.json(accountRequest));
         Response response = target("accounts").request().get();
@@ -101,8 +97,8 @@ public class AccountResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testGetAccount() {
-        AccountRequest accountRequest = createAccountRequest(1);
+    public void testGetAccount_Exist() {
+        AccountRequest accountRequest = createAccountRequest(1L);
         target("accounts/").request()
                 .post(Entity.json(accountRequest));
 
@@ -140,7 +136,7 @@ public class AccountResourceTest extends JerseyTest {
         );
     }
 
-    private AccountRequest createAccountRequest(long clientId) {
+    private AccountRequest createAccountRequest(Long clientId) {
         AccountRequest account = new AccountRequest();
         account.setClientId(clientId);
         account.setBalance(100);

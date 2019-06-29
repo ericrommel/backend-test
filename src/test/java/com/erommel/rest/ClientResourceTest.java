@@ -1,6 +1,8 @@
 package com.erommel.rest;
 
-import org.json.*;
+import com.erommel.model.Client;
+import com.erommel.rest.response.CollectionResponse;
+import com.erommel.rest.response.ErrorResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.FixMethodOrder;
@@ -9,11 +11,11 @@ import org.junit.runners.MethodSorters;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.junit.Assert.*;
+import static javax.ws.rs.core.Response.Status.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -27,126 +29,96 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testAddClient_Ok() {
         Response response = target("clients").request()
-                .post(Entity.json(
-                        "{\n" +
-                        "\t\"name\": \"Amanda Another\",\n" +
-                        "\t\"document_id\": \"1123485671\"\n" +
-                        "}"
-                ));
+                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
 
         assertEquals(
                 "Http Response should be 201 ",
-                Response.Status.CREATED.getStatusCode(),
+                CREATED.getStatusCode(),
                 response.getStatus()
         );
     }
 
     @Test
     public void testAddClient_WithSameDocumentId() {
-        Response response;
-
-        response = target("clients").request()
-                .post(Entity.json("{\n" +
-                                "\t\"name\": \"Julius Maximus\",\n" +
-                                "\t\"document_id\": \"987654321\"\n" +
-                                "}"
-                ));
+        Response response = target("clients").request()
+                .post(Entity.json(createClient(2L, "Cauan Liam", "987654")));
 
         assertEquals(
                 "Http Response should be 201",
-                Response.Status.CREATED.getStatusCode(),
+                CREATED.getStatusCode(),
                 response.getStatus()
         );
 
         response = target("clients").request()
-                .post(Entity.json("{\n" +
-                        "\t\"name\": \"Maximus Julius\",\n" +
-                        "\t\"document_id\": \"987654321\"\n" +
-                        "}"
-                ));
+                .post(Entity.json(createClient(3L, "Caio Dantas", "987654")));
+
         assertEquals(
                 "Http Response should be 409",
-                Response.Status.CONFLICT.getStatusCode(),
+                CONFLICT.getStatusCode(),
                 response.getStatus()
         );
     }
 
     @Test
     public void testGetClients() {
-        Response response;
-        response = target("clients").request()
-                .post(Entity.json(
-                        "{\n" +
-                        "\t\"name\": \"Eric Dantas\",\n" +
-                        "\t\"document_id\": \"666888\"\n" +
-                        "}"
-                ));
+        target("clients").request()
+                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
 
-        response = target("clients").request().get();
+        Response response = target("clients").request().get();
+        CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
+
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        JSONObject jsonObject = new JSONObject(content);
-        JSONArray result = (JSONArray) jsonObject.get("result");
         assertFalse(
-                "Should have at least 1 client registered",
-                result.isEmpty()
+                "Should have at least 1 account registered",
+                collectionResponse.getResult().isEmpty()
         );
     }
 
     @Test
     public void testGetClient_NotExist() {
         Response response = target("clients/100000").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should return status 404: ",
-                Response.Status.NOT_FOUND.getStatusCode(),
+                NOT_FOUND.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Client with id 100000 not found\"}",
-                content
+                "Client with id 100000 not found",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testGetClient_Exist() {
-        Response response;
-        response = target("clients").request()
-                .post(Entity.json(
-                        "{\n" +
-                        "\t\"name\": \"Rommel Dantas\",\n" +
-                        "\t\"document_id\": \"777888\"\n" +
-                        "}"
-                ));
+        target("clients").request()
+                .post(Entity.json(createClient(1L, "Eric Rommel", "123456")));
 
-        response = target("clients/1").request().get();
+        Response response = target("clients/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
-        JSONObject jsonObject = new JSONObject(content);
+        Client content = response.readEntity(Client.class);
         assertEquals(
                 "Content of response is: ",
                 1,
-                jsonObject.get("id")
+                content.getId()
         );
+    }
+
+    private Client createClient(Long id, String name, String documentId) {
+        return new Client(id, name, documentId);
     }
 }
