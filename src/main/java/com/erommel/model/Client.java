@@ -25,7 +25,7 @@ public class Client {
     private String documentId;
 
     @JsonIgnore
-    @OneToMany
+    @OneToMany(mappedBy = "client")
     private List<Account> accounts;
 
     public Client() {

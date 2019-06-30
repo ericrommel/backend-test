@@ -2,7 +2,7 @@ package com.erommel.exception;
 
 public class ClientHasAccountException extends RuntimeException {
     public ClientHasAccountException() {
-        this("Transaction not valid!");
+        this("This client has one or more accounts and cannot be deleted");
     }
 
     public ClientHasAccountException(String message) {

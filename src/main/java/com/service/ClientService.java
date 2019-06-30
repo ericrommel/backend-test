@@ -1,12 +1,12 @@
 package com.service;
 
-
 import com.erommel.exception.EntityAlreadyExistsException;
 import com.erommel.exception.ClientHasAccountException;
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.model.Client;
 import com.erommel.repository.ClientRepository;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -51,19 +51,23 @@ public class ClientService {
         }
     }
 
-    public void delete(Client client) {
-        Objects.requireNonNull(client);
-        if (client.getAccounts().size() > 0) {
-            throw new ClientHasAccountException("{0} has one or more accounts registered.");
+    public void delete(Long clientId) {
+        if (clientId < 1) {
+            throw new InvalidParameterException("Invalid value for client id");
         }
-        if(!exists(client))
-            throw new EntityNotFoundException(client + " not found");
+
+        Client client = repository.findClientWithAccounts(clientId)
+                .orElseThrow(() -> new EntityNotFoundException("Client with id " + clientId + " not found"));
+
+        if (!client.getAccounts().isEmpty()) {
+            throw new ClientHasAccountException("Client with id " + clientId + " has one or more accoutns registered.");
+        }
 
         if (!repository.remove(client)) {
-            throw new RuntimeException("Client " + client.getName() + " not deleted");
+            throw new RuntimeException(client + " not removed");
         }
 
-        LOG.log(Level.INFO, "{0} has been saved", client);
+        LOG.log(Level.INFO, "{0} has been removed", clientId);
     }
 
     private boolean exists(Long id) {
