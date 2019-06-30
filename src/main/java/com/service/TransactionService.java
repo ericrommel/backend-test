@@ -1,7 +1,7 @@
 package com.service;
 
-import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
+import com.erommel.exception.TransactionNotFoundException;
 import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Account;
 import com.erommel.model.Transaction;
@@ -83,28 +83,33 @@ public class TransactionService {
     }
 
     public List<Transaction> findByDate(LocalDate localDate) {
-        Optional<List<Transaction>> transaction = repository.findByDate(localDate);
-
-        if (transaction.isPresent()) {
-            LOG.log(Level.INFO, "Transactions from " + localDate + " were found. {0}", transaction.get());
-            return transaction.get();
+        List<Transaction> transactions = repository.findByDate(localDate);
+        if (transactions.size() > 0) {
+            LOG.log(Level.INFO, "Transactions from " + localDate + " were found: {0}", transactions);
+            return transactions;
         }
-
-        throw new EntityNotFoundException("Transactions from " + localDate + " not found");
+        throw new TransactionNotFoundException("Transactions from " + localDate + " not found");
     }
 
     public List<Transaction> findByFromAccount(Long fromAccount) {
-        Optional<List<Transaction>> transaction = repository.findByFromAccount(fromAccount);
-
-        if (transaction.isPresent()) {
-            LOG.log(Level.INFO, "Transactions were found {0}", transaction.get());
-            return transaction.get();
+        List<Transaction> transactions = repository.findByFromAccount(fromAccount);
+        if (transactions.size() > 0) {
+            LOG.log(Level.INFO, "Transactions were found: {0}", transactions);
+            return transactions;
         }
-
-        throw new EntityNotFoundException("Transaction with id " + fromAccount + " not found");
+        throw new TransactionNotFoundException("Transaction from account number " + fromAccount + " not found");
     }
 
-    public Transaction findById(Long id) {
+    public List<Transaction> findByToAccount(Long toAccount) {
+        List<Transaction> transactions = repository.findByToAccount(toAccount);
+        if (transactions.size() > 0) {
+            LOG.log(Level.INFO, "Transactions were found: {0}", transactions);
+            return transactions;
+        }
+        throw new TransactionNotFoundException("Transaction from account number " + toAccount + " not found");
+    }
+
+    public Transaction findById(Long id) throws TransactionNotFoundException {
         Optional<Transaction> transaction = repository.findById(id);
 
         if (transaction.isPresent()) {
@@ -113,7 +118,7 @@ public class TransactionService {
         }
 
         LOG.log(Level.INFO, "Transaction {0} not found", id);
-        throw new EntityNotFoundException("Transaction with id " + id + " not found");
+        throw new TransactionNotFoundException("Transaction with id " + id + " not found");
     }
 
     public List<Transaction> findAll() {

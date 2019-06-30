@@ -14,45 +14,55 @@ import java.util.logging.Logger;
 public class TransactionRepository extends Repository<Transaction, Long> {
         private static final Logger LOG = Logger.getLogger(TransactionRepository.class.getName());
 
-    public Optional<List<Transaction>> findByDate(LocalDate date) {
+    public List<Transaction> findByDate(LocalDate date) {
         try(Session session = getSession()) {
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.dateTimeTransaction >= :datetime", Transaction.class
             );
             query.setParameter("datetime", date.atStartOfDay());
-            return Optional.of(query.getResultList());
+            return query.getResultList();
         } catch (Exception e) {
             LOG.warning("Error to find transactions from date " + date);
+            throw new RuntimeException("Error to find transactions from date " + date);
         }
-
-        return Optional.empty();
     }
 
-    public Optional<List<Transaction>> findByFromAccount(Long account) {
+    public List<Transaction> findByFromAccount(Long account) {
         try(Session session = getSession()) {
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.fromAccount.number = :number", Transaction.class
             );
             query.setParameter("number", account);
-            return Optional.of(query.getResultList());
-
+            return query.getResultList();
         } catch (Exception e) {
             LOG.warning("Error to find transaction by account " + account);
+            throw new RuntimeException("Error to find transaction by account " + account);
         }
-
-        return Optional.empty();
     }
 
-    public Optional<List<Transaction>> findByToAccount(long account) {
+    public List<Transaction> findByToAccount(long account) {
         try(Session session = getSession()) {
             Query<Transaction> query = session.createQuery(
                     "SELECT t FROM Transaction t WHERE t.toAccount.number = :toAccount", Transaction.class
             );
             query.setParameter("toAccount", account);
-            return Optional.of(query.getResultList());
+            return query.getResultList();
 
         } catch (Exception e) {
             LOG.warning("Error to find transaction by account " + account);
+            throw new RuntimeException("Error to find transaction by account " + account);
+        }
+    }
+
+    public Optional<Transaction> findById(Long id) {
+        try(Session session = getSession()) {
+
+            Query<Transaction> query = session.createQuery("SELECT t FROM Transaction t WHERE t.transaction_id = :id", Transaction.class);
+            query.setParameter("id", id);
+            return Optional.of(query.getSingleResult());
+
+        } catch (Exception e) {
+            LOG.warning("Error to find transaction id " + id);
         }
 
         return Optional.empty();

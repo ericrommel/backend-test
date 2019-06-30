@@ -212,8 +212,11 @@ public class TransactionResourceTest extends JerseyTest {
     @Test
     public void testGetTransfer_Ok() {
         TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
-        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        target("transactions/transfers").request()
+                .post(Entity.json(transactionRequest));
+
         Response response = target("transactions/transfers/1").request().get();
+        System.out.println(response);
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -222,6 +225,7 @@ public class TransactionResourceTest extends JerseyTest {
         );
 
         Transaction content = response.readEntity(Transaction.class);
+        System.out.println(content);
         assertEquals(
                 "Content of response is: ",
                 1,
@@ -236,13 +240,13 @@ public class TransactionResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testGetTransfer_NotFount() {
+    public void testGetTransfer_NotFound() {
         Response response = target("transactions/transfers/600").request().get();
         ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should return status 404: ",
-                Response.Status.NOT_FOUND.getStatusCode(),
+                NOT_FOUND.getStatusCode(),
                 response.getStatus()
         );
 
@@ -254,27 +258,66 @@ public class TransactionResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testGetTransfer_FromAccount() {
+    public void testGetTransfer_ByFromAccount() {
         TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
         target("transactions/transfers").request().post(Entity.json(transactionRequest));
-        Response response = target("transactions/transfers/account/1").request().get();
+        Response response = target("transactions/transfers/account/from/1").request().get();
+        CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
 
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        Transaction content = response.readEntity(Transaction.class);
-        assertEquals(
-                "Content of response is: ",
-                1,
-                content.getFromAccount().getNumber()
+        assertFalse(
+                "Should have at least 1 transaction made",
+                collectionResponse.getResult().isEmpty()
         );
     }
 
     @Test
-    public void testGetTransfer_FromDate() {
+    public void testGetTransfer_ByFromAccount_NotExist() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers/account/from/2").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should return status 404: ",
+                NOT_FOUND.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Transaction from account number 2 not found",
+                errorResponse.getMessage()
+        );
+    }
+
+    @Test
+    public void testGetTransfer_ByToAccount() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers/account/to/1").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should return status 404: ",
+                NOT_FOUND.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Transaction from account number 1 not found",
+                errorResponse.getMessage()
+        );
+    }
+
+    @Test
+    public void testGetTransfer_FromValidDate() {
         TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
         target("transactions/transfers").request().post(Entity.json(transactionRequest));
         Response response = target("transactions/transfers/from/" + LocalDate.now()).request().get();
@@ -289,6 +332,43 @@ public class TransactionResourceTest extends JerseyTest {
         assertFalse(
                 "Should have at least 1 transaction made",
                 collectionResponse.getResult().isEmpty()
+        );
+    }
+
+    @Test
+    public void testGetTransfer_FromInvalidDate() {
+        Response response = target("transactions/transfers/from/2019-02-30").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should be 400 ",
+                BAD_REQUEST.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Text '2019-02-30' could not be parsed: Invalid date 'FEBRUARY 30'",
+                errorResponse.getMessage()
+        );
+    }
+
+    @Test
+    public void testGetTransfer_FromFutureDate() {
+        LocalDate date = LocalDate.now().plusDays(10);
+        Response response = target("transactions/transfers/from/" + date).request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should be 400 ",
+                NOT_FOUND.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Transactions from " + date + " not found",
+                errorResponse.getMessage()
         );
     }
 

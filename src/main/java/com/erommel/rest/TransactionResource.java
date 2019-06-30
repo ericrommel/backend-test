@@ -2,6 +2,7 @@ package com.erommel.rest;
 
 import com.erommel.exception.EntityNotFoundException;
 import com.erommel.exception.EntityNotValidException;
+import com.erommel.exception.TransactionNotFoundException;
 import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Transaction;
 import com.erommel.rest.request.TransactionRequest;
@@ -61,10 +62,12 @@ public class TransactionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response get(@PathParam("transactionId") Long transactionId) {
+        LOG.log(Level.INFO, "Getting transaction id " + transactionId);
         try {
             Transaction transaction = service.findById(transactionId);
-            return Response.ok(transaction).build();
-        } catch (EntityNotFoundException e) {
+            return Response.ok().entity(transaction).build();
+        } catch (TransactionNotFoundException e) {
+            LOG.log(Level.WARNING, "Transactions not found.", e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
             LOG.log(Level.WARNING, "unexpected", e);
@@ -76,37 +79,62 @@ public class TransactionResource {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response get(@PathParam("dateTimeTransaction") String dateTimeTransaction) {
-        LocalDate date = null;
+        LOG.log(Level.INFO, "Getting all transfers from date: " + dateTimeTransaction);
         try {
-            date = LocalDate.parse(dateTimeTransaction, DateTimeFormatter.ISO_LOCAL_DATE);
-        } catch (DateTimeParseException e) {
-            LOG.log(Level.WARNING, "Conversion of date " + dateTimeTransaction + " using ISO date time failed.", e);
-        } catch(Exception e) {
-            LOG.log(Level.WARNING, "Unexpected exception. ", e);
-        }
-
-        try {
+            LocalDate date = LocalDate.parse(dateTimeTransaction, DateTimeFormatter.ISO_LOCAL_DATE);
             List<Transaction> transactions = service.findByDate(date);
-            return Response.ok(transactions).build();
-        } catch (EntityNotFoundException e) {
+            return Response
+                    .ok()
+                    .entity(new CollectionResponse(transactions))
+                    .build();
+        } catch (DateTimeParseException e) {
+            LOG.log(Level.WARNING, "Conversion of date " + dateTimeTransaction + " using ISO date time failed.", e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(e.getMessage())).build();
+        } catch (TransactionNotFoundException e) {
+            LOG.log(Level.WARNING, "Transactions not found.", e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Unexpected exception. ", e);
+            LOG.log(Level.WARNING, "unexpected", e.getMessage());
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
     }
 
-    @Path("/transfers/account/{fromAccount}")
+    @Path("/transfers/account/from/{accountNumber}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getFromAccount(@PathParam("fromAccount") Long fromAccount) {
+    public Response getByFromAccount(@PathParam("accountNumber") Long accountNumber) {
+        LOG.log(Level.INFO, "Getting all transfers by from account number " + accountNumber);
         try {
-            List<Transaction> transaction = service.findByFromAccount(fromAccount);
-            return Response.ok(transaction).build();
-        } catch (EntityNotFoundException e) {
+            List<Transaction> transactions = service.findByFromAccount(accountNumber);
+            return Response
+                    .ok()
+                    .entity(new CollectionResponse(transactions))
+                    .build();
+        } catch (TransactionNotFoundException e) {
+            LOG.log(Level.WARNING, "Transactions not found", e.getMessage());
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
         } catch (Exception e) {
-            LOG.log(Level.WARNING, "Unexpected exception. ", e);
+            LOG.log(Level.WARNING, "unexpected", e);
+            return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
+        }
+    }
+
+    @Path("/transfers/account/to/{accountNumber}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response getByToAccount(@PathParam("accountNumber") Long accountNumber) {
+        LOG.log(Level.INFO, "Getting all transfers by to account number " + accountNumber);
+        try {
+            List<Transaction> transactions = service.findByToAccount(accountNumber);
+            return Response
+                    .ok()
+                    .entity(new CollectionResponse(transactions))
+                    .build();
+        } catch (TransactionNotFoundException e) {
+            LOG.log(Level.WARNING, "Transactions not found", e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse(e.getMessage())).build();
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "unexpected", e);
             return Response.serverError().entity(new ErrorResponse(e.getMessage())).build();
         }
     }
