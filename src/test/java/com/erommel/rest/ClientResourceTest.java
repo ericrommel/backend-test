@@ -117,4 +117,52 @@ public class ClientResourceTest extends JerseyTest {
                 content.getId()
         );
     }
+
+    @Test
+    public void testUpdateClient_Name() {
+        Client client = new Client(1L, "Eric Rommel", "123456");
+
+        target("clients").request()
+                .post(Entity.json(client));
+
+        client.setName("Caio Dantas");
+        Response response = target("clients/1").request().put(Entity.json(client));
+
+        assertEquals(
+                "Http Response should return status 200: ",
+                OK.getStatusCode(),
+                response.getStatus()
+        );
+
+        Client content = response.readEntity(Client.class);
+        assertEquals(
+                "Content of response is: ",
+                "Caio Dantas",
+                content.getName()
+        );
+    }
+
+    @Test
+    public void testUpdateClient_DocumentId() {
+        Client client = new Client(1L, "Eric Rommel", "123456");
+
+        target("clients").request()
+                .post(Entity.json(client));
+
+        client.setDocumentId("987654");
+        Response response = target("clients/1").request().put(Entity.json(client));
+
+        assertEquals(
+                "Http Response should return status 200: ",
+                OK.getStatusCode(),
+                response.getStatus()
+        );
+
+        Client content = response.readEntity(Client.class);
+        assertEquals(
+                "Content of response is: ",
+                "987654",
+                content.getDocumentId()
+        );
+    }
 }
