@@ -51,11 +51,18 @@ public class ClientResourceTest extends JerseyTest {
 
         response = target("clients").request()
                 .post(Entity.json(new Client(3L, "Caio Dantas", "987654")));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 409",
                 CONFLICT.getStatusCode(),
                 response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Client{name='Caio Dantas', documentId='987654'} already exists",
+                errorResponse.getMessage()
         );
     }
 
@@ -98,7 +105,7 @@ public class ClientResourceTest extends JerseyTest {
     }
 
     @Test
-    public void testGetClient_Exist() {
+    public void testGetClient_Ok() {
         target("clients").request()
                 .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
 
