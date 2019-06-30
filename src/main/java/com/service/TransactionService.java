@@ -6,7 +6,6 @@ import com.erommel.exception.TransactionNotValidException;
 import com.erommel.model.Account;
 import com.erommel.model.Transaction;
 import com.erommel.repository.TransactionRepository;
-import com.erommel.rest.request.AccountRequest;
 import com.erommel.rest.request.TransactionRequest;
 
 import javax.ws.rs.BadRequestException;
@@ -87,7 +86,7 @@ public class TransactionService {
         Optional<List<Transaction>> transaction = repository.findByDate(localDate);
 
         if (transaction.isPresent()) {
-            LOG.log(Level.INFO, "Transactions were found. {0}", transaction.get());
+            LOG.log(Level.INFO, "Transactions from " + localDate + " were found. {0}", transaction.get());
             return transaction.get();
         }
 

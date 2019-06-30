@@ -1,10 +1,13 @@
 package com.erommel.rest;
 
+import com.erommel.model.Client;
+import com.erommel.model.Transaction;
 import com.erommel.rest.request.AccountRequest;
+import com.erommel.rest.request.TransactionRequest;
+import com.erommel.rest.response.CollectionResponse;
+import com.erommel.rest.response.ErrorResponse;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -12,18 +15,20 @@ import org.junit.runners.MethodSorters;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
-import static org.junit.Assert.*;
+import static javax.ws.rs.core.Response.Status.*;
+import static org.eclipse.jetty.http.MultiPartParser.LOG;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TransactionResourceTest extends JerseyTest {
+
+    AccountRequest account1;
+    AccountRequest account2;
 
     @Override
     protected Application configure() {
@@ -34,265 +39,206 @@ public class TransactionResourceTest extends JerseyTest {
 
     @Before
     public void init() {
-        /* Adding clients because these are necessary to add accounts */
-        Response response_client = target("clients").request()
-                .post(Entity.json("{\n" +
-                        "\t\"name\": \"Amanda Bertullite\",\n" +
-                        "\t\"document_id\": \"23485671\"\n" +
-                        "}"));
+        LOG.info("Init tests for account...");
 
-        response_client = target("clients").request()
-                .post(Entity.json("{\n" +
-                        "\t\"name\": \"David Silva\",\n" +
-                        "\t\"document_id\": \"32348\"\n" +
-                        "}"));
+        /* Creating clients because these are necessary to add accounts */
+        target("clients").request()
+                .post(Entity.json((new Client(1L, "Eric Rommel", "123456"))));
+        target("clients").request()
+                .post(Entity.json(new Client(2L, "Caio Dantas", "987654")));
 
+        /* Creating accounts using the clients added */
+        AccountRequest accountRequest1 = createAccountRequest(1L);
+        target("accounts").request()
+                .post(Entity.json(accountRequest1));
 
-        /* After clients added, we can added account using the clients added */
-        Response response_account = target("accounts/").request()
-                .post(Entity.json("{\n" +
-                        "\t\"client_id\": 1,\n" +
-                        "\t\"balance\": 100\n" +
-                        "}"));
-        response_account = target("accounts/").request()
-                .post(Entity.json("{\n" +
-                        "\t\"client_id\": 2,\n" +
-                        "\t\"balance\": 80\n" +
-                        "}"));
+        AccountRequest accountRequest2 = createAccountRequest(2L);
+        target("accounts").request()
+                .post(Entity.json(accountRequest2));
     }
 
     @Test
     public void testAddTransaction() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 35\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
 
         assertEquals(
                 "Http Response should be 201 ",
-                Response.Status.CREATED.getStatusCode(),
+                CREATED.getStatusCode(),
                 response.getStatus()
-        );
-
-        String content = response.readEntity(String.class);
-        assertEquals(
-                "No body returned for response",
-                "",
-                content
         );
     }
 
     @Test
     public void testAddTransaction_AccountsAreTheSame() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 1L, 35.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 1,\n" +
-                        "\t\"amount\": 15\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 400 ",
-                Response.Status.BAD_REQUEST.getStatusCode(),
+                BAD_REQUEST.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"The origin and destination account numbers are the same\"}",
-                content
+                "The origin and destination account numbers are the same",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testAddTransaction_AmountIsNegative() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, -35.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": -10\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 400 ",
-                Response.Status.BAD_REQUEST.getStatusCode(),
+                BAD_REQUEST.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Transactions with amount equal or less than 0 are not permitted\"}",
-                content
+                "Transactions with amount equal or less than 0 are not permitted",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testAddTransaction_AmountIsZero() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 0.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 0\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 400 ",
-                Response.Status.BAD_REQUEST.getStatusCode(),
+                BAD_REQUEST.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Transactions with amount equal or less than 0 are not permitted\"}",
-                content
+                "Transactions with amount equal or less than 0 are not permitted",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testAddTransaction_DoesNotHaveMoneyEnough() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 10000.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 100000\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 400 ",
-                Response.Status.BAD_REQUEST.getStatusCode(),
+                BAD_REQUEST.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Transaction rejected. From account does not have money enough\"}",
-                content
+                "Transaction rejected. From account does not have money enough",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testAddTransaction_FromAccountDoesNotExist() {
+        TransactionRequest transactionRequest = createTransactionRequest(100L, 2L, 35.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 100,\n" +
-                        "\t\"to\": 1,\n" +
-                        "\t\"amount\": 15\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 404 ",
-                Response.Status.NOT_FOUND.getStatusCode(),
+                NOT_FOUND.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Account with id 100 not found\"}",
-                content
+                "Account with id 100 not found",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testAddTransaction_toAccountDoesNotExist() {
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 100L, 35.0);
         Response response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 100,\n" +
-                        "\t\"amount\": 15\n" +
-                        "}"));
+                .post(Entity.json(transactionRequest));
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should be 404 ",
-                Response.Status.NOT_FOUND.getStatusCode(),
+                NOT_FOUND.getStatusCode(),
                 response.getStatus()
         );
 
-        String content = response.readEntity(String.class);
         assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Account with id 100 not found\"}",
-                content
+                "Account with id 100 not found",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testGetTransfers() {
-        Response response;
-
-        response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 3\n" +
-                        "}"));
-
-        response = target("transactions/transfers").request().get();
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers").request().get();
+        CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
 
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        JSONObject jsonObject = new JSONObject(content);
-        JSONArray result = (JSONArray) jsonObject.get("result");
         assertFalse(
                 "Should have at least 1 transaction made",
-                result.isEmpty()
+                collectionResponse.getResult().isEmpty()
         );
     }
 
     @Test
     public void testGetTransfer_Ok() {
-        Response response;
-
-        response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 3\n" +
-                        "}"));
-
-        response = target("transactions/transfers/1").request().get();
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        JSONObject jsonObject = new JSONObject(content);
+        Transaction content = response.readEntity(Transaction.class);
         assertEquals(
                 "Content of response is: ",
                 1,
-                jsonObject.get("transaction_id")
+                content.getTransaction_id()
         );
+
+//        assertEquals(
+//                "Content of response is: ",
+//                1,
+//                content.getTransaction_id()
+//        );
     }
 
     @Test
     public void testGetTransfer_NotFount() {
         Response response = target("transactions/transfers/600").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
                 "Http Response should return status 404: ",
@@ -301,31 +247,17 @@ public class TransactionResourceTest extends JerseyTest {
         );
 
         assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        assertEquals(
                 "Content of response is: ",
-                "{\"message\":\"Transaction with id 600 not found\"}",
-                content
+                "Transaction with id 600 not found",
+                errorResponse.getMessage()
         );
     }
 
     @Test
     public void testGetTransfer_FromAccount() {
-        Response response;
-
-        response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 3\n" +
-                        "}"));
-
-        response = target("transactions/transfers/account/1").request().get();
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers/account/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -333,50 +265,44 @@ public class TransactionResourceTest extends JerseyTest {
                 response.getStatus()
         );
 
+        Transaction content = response.readEntity(Transaction.class);
         assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        JSONArray result = new JSONArray(content);
-        assertFalse(
-                "Should have at least 1 transaction made from account 1",
-                result.isEmpty()
+                "Content of response is: ",
+                1,
+                content.getFromAccount().getNumber()
         );
     }
 
     @Test
     public void testGetTransfer_FromDate() {
-        Response response;
-
-        response = target("transactions/transfers").request()
-                .post(Entity.json("{\n" +
-                        "\t\"from\": 1,\n" +
-                        "\t\"to\": 2,\n" +
-                        "\t\"amount\": 3\n" +
-                        "}"));
-
-        response = target("transactions/transfers/from/" + LocalDate.now()).request().get();
+        TransactionRequest transactionRequest = createTransactionRequest(1L, 2L, 35.0);
+        target("transactions/transfers").request().post(Entity.json(transactionRequest));
+        Response response = target("transactions/transfers/from/" + LocalDate.now()).request().get();
+        CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
 
         assertEquals(
                 "Http Response should return status 200: ",
-                Response.Status.OK.getStatusCode(),
+                OK.getStatusCode(),
                 response.getStatus()
         );
 
-        assertEquals(
-                "Http Content-Type should be: ",
-                MediaType.APPLICATION_JSON,
-                response.getHeaderString(HttpHeaders.CONTENT_TYPE)
-        );
-
-        String content = response.readEntity(String.class);
-        JSONArray result = new JSONArray(content);
         assertFalse(
-                "Should have at least 1 transaction made at " + LocalDate.now(),
-                result.isEmpty()
+                "Should have at least 1 transaction made",
+                collectionResponse.getResult().isEmpty()
         );
+    }
+
+    private AccountRequest createAccountRequest(Long clientId) {
+        AccountRequest account = new AccountRequest();
+        account.setClientId(clientId);
+        account.setBalance(100);
+        return account;
+    }
+    private TransactionRequest createTransactionRequest(Long fromAccountNumber, Long toAccountNumber, double amount) {
+        TransactionRequest transaction = new TransactionRequest();
+        transaction.setFromAccount(fromAccountNumber);
+        transaction.setToAccount(toAccountNumber);
+        transaction.setAmount(amount);
+        return transaction;
     }
 }

@@ -49,7 +49,6 @@ public class Transaction {
     public long getTransaction_id() {
         return transaction_id;
     }
-
     public void setTransaction_id(long transaction_id) {
         this.transaction_id = transaction_id;
     }
@@ -57,7 +56,6 @@ public class Transaction {
     public double getAmount() {
         return amount;
     }
-
     public void setAmount(double amount) {
         this.amount = amount;
     }
@@ -65,7 +63,6 @@ public class Transaction {
     public Account getFromAccount() {
         return fromAccount;
     }
-
     public void setFromAccount(Account fromAccount) {
         this.fromAccount = fromAccount;
     }
@@ -73,7 +70,6 @@ public class Transaction {
     public Account getToAccount() {
         return toAccount;
     }
-
     public void setToAccount(Account toAccount) {
         this.toAccount = toAccount;
     }
@@ -81,29 +77,10 @@ public class Transaction {
     public LocalDateTime getDateTimeTransaction() {
         return dateTimeTransaction;
     }
-
     public void setDateTimeTransaction(LocalDateTime dateTimeTransaction) {
         this.dateTimeTransaction = dateTimeTransaction;
     }
 
-    //    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Transaction transaction = (Transaction) o;
-//
-//        if (transaction_id != transaction.transaction_id) return false;
-//        return documentId.equals(transaction documentId);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        int result = (int) (transaction_id ^ (transaction_id >>> 32));
-//        result = 31 * result + documentId.hashCode();
-//        return result;
-//    }
-//
     @Override
     public String toString() {
         return "Transaction{" +
