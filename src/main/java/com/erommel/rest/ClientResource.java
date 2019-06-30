@@ -37,7 +37,7 @@ public class ClientResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{id}")
     public Response get(@PathParam("id") String id) {
-        LOG.log(Level.INFO, "Receiving request with id param {}", id);
+        LOG.log(Level.INFO, "Receiving request with id param {0}", id);
 
         try {
             Client client = service.findById(Long.parseLong(id));

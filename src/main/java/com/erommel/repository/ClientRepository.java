@@ -33,9 +33,9 @@ public class ClientRepository extends Repository<Client, Long> {
             query.setParameter("id", id);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
-            LOG.log(Level.WARNING, "Client id " + id + " there is no account registered", e);
+            LOG.log(Level.WARNING, "Client id " + id + " there is no account registered", e.getMessage());
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error to find client id " + id, e);
+            LOG.log(Level.SEVERE, "Error to find client id " + id, e.getMessage());
         }
 
         return Optional.empty();

@@ -1,6 +1,7 @@
 package com.erommel.rest;
 
 import com.erommel.model.Client;
+import com.erommel.rest.request.AccountRequest;
 import com.erommel.rest.response.CollectionResponse;
 import com.erommel.rest.response.ErrorResponse;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -23,13 +24,13 @@ public class ClientResourceTest extends JerseyTest {
 
     @Override
     protected Application configure() {
-        return new ResourceConfig(ClientResource.class);
+        return new ResourceConfig(ClientResource.class).register(AccountResource.class);
     }
 
     @Test
     public void testAddClient_Ok() {
         Response response = target("clients").request()
-                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
+                .post(Entity.json(new Client("Eric Rommel", "123456")));
 
         assertEquals(
                 "Http Response should be 201 ",
@@ -41,7 +42,7 @@ public class ClientResourceTest extends JerseyTest {
     @Test
     public void testAddClient_WithSameDocumentId() {
         Response response = target("clients").request()
-                .post(Entity.json(new Client(2L, "Cauan Liam", "987654")));
+                .post(Entity.json(new Client("Cauan Liam", "987654")));
 
         assertEquals(
                 "Http Response should be 201",
@@ -50,7 +51,7 @@ public class ClientResourceTest extends JerseyTest {
         );
 
         response = target("clients").request()
-                .post(Entity.json(new Client(3L, "Caio Dantas", "987654")));
+                .post(Entity.json(new Client("Caio Dantas", "987654")));
         ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
@@ -68,10 +69,12 @@ public class ClientResourceTest extends JerseyTest {
 
     @Test
     public void testGetClients() {
-        target("clients").request()
-                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
+        Response response;
 
-        Response response = target("clients").request().get();
+        response = target("clients").request()
+                .post(Entity.json(new Client("Eric Rommel", "123456")));
+
+        response = target("clients").request().get();
         CollectionResponse collectionResponse = response.readEntity(CollectionResponse.class);
 
         assertEquals(
@@ -106,10 +109,11 @@ public class ClientResourceTest extends JerseyTest {
 
     @Test
     public void testGetClient_Ok() {
-        target("clients").request()
-                .post(Entity.json(new Client(1L, "Eric Rommel", "123456")));
+        Response response;
 
-        Response response = target("clients/1").request().get();
+        response = target("clients").request()
+                .post(Entity.json(new Client("Eric Rommel", "123456")));
+        response = target("clients/1").request().get();
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -127,7 +131,7 @@ public class ClientResourceTest extends JerseyTest {
 
     @Test
     public void testUpdateClient_Name() {
-        Client client = new Client(1L, "Eric Rommel", "123456");
+        Client client = new Client("Eric Rommel", "123456");
 
         target("clients").request()
                 .post(Entity.json(client));
@@ -151,13 +155,15 @@ public class ClientResourceTest extends JerseyTest {
 
     @Test
     public void testUpdateClient_DocumentId() {
-        Client client = new Client(1L, "Eric Rommel", "123456");
+        Client client = new Client("Eric Rommel", "123456");
 
-        target("clients").request()
+        Response response;
+
+        response = target("clients").request()
                 .post(Entity.json(client));
 
         client.setDocumentId("987654");
-        Response response = target("clients/1").request().put(Entity.json(client));
+        response = target("clients/1").request().put(Entity.json(client));
 
         assertEquals(
                 "Http Response should return status 200: ",
@@ -170,6 +176,81 @@ public class ClientResourceTest extends JerseyTest {
                 "Content of response is: ",
                 "987654",
                 content.getDocumentId()
+        );
+    }
+
+    @Test
+    public void testDeleteClient_WithoutAccountRegistered() {
+        Response response;
+
+        response = target("clients").request()
+                .post(Entity.json(new Client("Eric Rommel", "123456")));
+
+        response = target("clients").request()
+                .post(Entity.json(new Client("Sandra Alves", "765983")));
+
+        response = target("clients/2").request().get();
+        assertEquals(
+                "Http Response should return status 200: ",
+                OK.getStatusCode(),
+                response.getStatus()
+        );
+
+        target("clients/2").request().delete();
+        assertEquals(
+                "Http Response should return status 200: ",
+                OK.getStatusCode(),
+                response.getStatus()
+        );
+
+        response = target("clients/2").request().get();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should return status 404: ",
+                NOT_FOUND.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Client with id 2 not found",
+                errorResponse.getMessage()
+        );
+    }
+
+    @Test
+    public void testDeleteClient_WithAccountRegistered() {
+        Response response;
+
+        response = target("clients").request()
+                .post(Entity.json(new Client("Eric Rommel", "123456")));
+
+        AccountRequest account = new AccountRequest();
+        account.setClientId(1L);
+        account.setBalance(100.0);
+        response = target("accounts/").request()
+                .post(Entity.json(account));
+
+        assertEquals(
+                "Http Response should be 201 ",
+                CREATED.getStatusCode(),
+                response.getStatus()
+        );
+
+        response = target("clients/1").request().delete();
+        ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
+
+        assertEquals(
+                "Http Response should return status 417: ",
+                EXPECTATION_FAILED.getStatusCode(),
+                response.getStatus()
+        );
+
+        assertEquals(
+                "Content of response is: ",
+                "Client with id 1 has one or more accoutns registered.",
+                errorResponse.getMessage()
         );
     }
 }

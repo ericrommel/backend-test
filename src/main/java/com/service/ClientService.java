@@ -64,10 +64,10 @@ public class ClientService {
         }
 
         if (!repository.remove(client)) {
-            throw new RuntimeException(client + " not removed");
+            throw new RuntimeException("Client " + client + " not removed");
         }
 
-        LOG.log(Level.INFO, "{0} has been removed", clientId);
+        LOG.log(Level.INFO, "Client {0} has been removed", clientId);
     }
 
     private boolean exists(Long id) {
