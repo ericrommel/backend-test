@@ -75,20 +75,20 @@ public class TransactionResource {
         }
     }
 
-    @Path("/transfers/from/{dateTimeTransaction}")
+    @Path("/transfers/from/{dateTransaction}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response get(@PathParam("dateTimeTransaction") String dateTimeTransaction) {
-        LOG.log(Level.INFO, "Getting all transfers from date: " + dateTimeTransaction);
+    public Response get(@PathParam("dateTransaction") String dateTransaction) {
+        LOG.log(Level.INFO, "Getting all transfers from date: " + dateTransaction);
         try {
-            LocalDate date = LocalDate.parse(dateTimeTransaction, DateTimeFormatter.ISO_LOCAL_DATE);
+            LocalDate date = LocalDate.parse(dateTransaction, DateTimeFormatter.ISO_LOCAL_DATE);
             List<Transaction> transactions = service.findByDate(date);
             return Response
                     .ok()
                     .entity(new CollectionResponse(transactions))
                     .build();
         } catch (DateTimeParseException e) {
-            LOG.log(Level.WARNING, "Conversion of date " + dateTimeTransaction + " using ISO date time failed.", e.getMessage());
+            LOG.log(Level.WARNING, "Conversion of date " + dateTransaction + " using ISO date time failed.", e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(e.getMessage())).build();
         } catch (TransactionNotFoundException e) {
             LOG.log(Level.WARNING, "Transactions not found.", e.getMessage());
