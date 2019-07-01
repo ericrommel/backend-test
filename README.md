@@ -238,3 +238,10 @@ Create a transfer.
 
 `No body returned for response`
 
+## Author
+- [Eric Dantas](https://github.com/ericrommel)
+
+## Contacts
+- [LinkedIn](https://www.linkedin.com/in/ericrommel)
+- Phone number: +36 70 462-7040
+- Skype: eric.rommel
