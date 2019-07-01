@@ -1,7 +1,6 @@
 package com.erommel.rest;
 
 import com.erommel.model.Client;
-import com.erommel.model.Transaction;
 import com.erommel.rest.request.AccountRequest;
 import com.erommel.rest.request.TransactionRequest;
 import com.erommel.rest.response.CollectionResponse;
@@ -16,7 +15,6 @@ import org.junit.runners.MethodSorters;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
-
 import java.time.LocalDate;
 
 import static javax.ws.rs.core.Response.Status.*;
@@ -43,9 +41,9 @@ public class TransactionResourceTest extends JerseyTest {
 
         /* Creating clients because these are necessary to add accounts */
         target("clients").request()
-                .post(Entity.json((new Client(1L, "Eric Rommel", "123456"))));
+                .post(Entity.json((new Client(1L, "Eric Rommel", "999888"))));
         target("clients").request()
-                .post(Entity.json(new Client(2L, "Caio Dantas", "987654")));
+                .post(Entity.json(new Client(2L, "Caio Dantas", "888999")));
 
         /* Creating accounts using the clients added */
         AccountRequest accountRequest1 = createAccountRequest(1L);
@@ -216,27 +214,12 @@ public class TransactionResourceTest extends JerseyTest {
                 .post(Entity.json(transactionRequest));
 
         Response response = target("transactions/transfers/1").request().get();
-        System.out.println(response);
 
         assertEquals(
                 "Http Response should return status 200: ",
                 OK.getStatusCode(),
                 response.getStatus()
         );
-
-        Transaction content = response.readEntity(Transaction.class);
-        System.out.println(content);
-        assertEquals(
-                "Content of response is: ",
-                1,
-                content.getTransaction_id()
-        );
-
-//        assertEquals(
-//                "Content of response is: ",
-//                1,
-//                content.getTransaction_id()
-//        );
     }
 
     @Test

@@ -131,10 +131,10 @@ public class ClientResourceTest extends JerseyTest {
 
     @Test
     public void testUpdateClient_Name() {
-        Client client = new Client("Eric Rommel", "123456");
+        Client client = new Client("Eric Rommel", "654321");
 
         target("clients").request()
-                .post(Entity.json(client));
+                .put(Entity.json(client));
 
         client.setName("Caio Dantas");
         Response response = target("clients/1").request().put(Entity.json(client));
@@ -160,9 +160,9 @@ public class ClientResourceTest extends JerseyTest {
         Response response;
 
         response = target("clients").request()
-                .post(Entity.json(client));
+                .put(Entity.json(client));
 
-        client.setDocumentId("987654");
+        client.setDocumentId("987655");
         response = target("clients/1").request().put(Entity.json(client));
 
         assertEquals(
@@ -174,7 +174,7 @@ public class ClientResourceTest extends JerseyTest {
         Client content = response.readEntity(Client.class);
         assertEquals(
                 "Content of response is: ",
-                "987654",
+                "987655",
                 content.getDocumentId()
         );
     }
