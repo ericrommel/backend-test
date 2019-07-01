@@ -17,7 +17,7 @@ public class Transaction {
     private long transaction_id;
 
     @JsonProperty("amount")
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private double amount;
 
     @JsonProperty("from")
@@ -32,7 +32,7 @@ public class Transaction {
             name = "t_account_number", updatable = false)
     private Account toAccount;
 
-    @Column(unique = false, nullable = false)
+    @Column(nullable = false)
     private LocalDateTime dateTimeTransaction;
 
     public Transaction() {

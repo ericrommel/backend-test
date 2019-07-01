@@ -25,9 +25,6 @@ import static org.junit.Assert.assertFalse;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TransactionResourceTest extends JerseyTest {
 
-    AccountRequest account1;
-    AccountRequest account2;
-
     @Override
     protected Application configure() {
         return new ResourceConfig(TransactionResource.class)
@@ -343,7 +340,7 @@ public class TransactionResourceTest extends JerseyTest {
         ErrorResponse errorResponse = response.readEntity(ErrorResponse.class);
 
         assertEquals(
-                "Http Response should be 400 ",
+                "Http Response should be 404 ",
                 NOT_FOUND.getStatusCode(),
                 response.getStatus()
         );

@@ -71,7 +71,7 @@ public class ClientResourceTest extends JerseyTest {
     public void testGetClients() {
         Response response;
 
-        response = target("clients").request()
+        target("clients").request()
                 .post(Entity.json(new Client("Eric Rommel", "123456")));
 
         response = target("clients").request().get();
@@ -111,7 +111,7 @@ public class ClientResourceTest extends JerseyTest {
     public void testGetClient_Ok() {
         Response response;
 
-        response = target("clients").request()
+        target("clients").request()
                 .post(Entity.json(new Client("Eric Rommel", "123456")));
         response = target("clients/1").request().get();
 
@@ -159,7 +159,7 @@ public class ClientResourceTest extends JerseyTest {
 
         Response response;
 
-        response = target("clients").request()
+        target("clients").request()
                 .put(Entity.json(client));
 
         client.setDocumentId("987655");
@@ -183,10 +183,10 @@ public class ClientResourceTest extends JerseyTest {
     public void testDeleteClient_WithoutAccountRegistered() {
         Response response;
 
-        response = target("clients").request()
+        target("clients").request()
                 .post(Entity.json(new Client("Eric Rommel", "123456")));
 
-        response = target("clients").request()
+        target("clients").request()
                 .post(Entity.json(new Client("Sandra Alves", "765983")));
 
         response = target("clients/2").request().get();
@@ -223,7 +223,7 @@ public class ClientResourceTest extends JerseyTest {
     public void testDeleteClient_WithAccountRegistered() {
         Response response;
 
-        response = target("clients").request()
+        target("clients").request()
                 .post(Entity.json(new Client("Eric Rommel", "123456")));
 
         AccountRequest account = new AccountRequest();
