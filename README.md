@@ -34,3 +34,31 @@ This command will create a directory on *build/output/account-management*
 that contains the standalone application with scripts for run it
 (e.g. *run.sh, run.bat, start.sh, start.bat ...*).
 
+## Documentation
+This is a summary of the API.
+
+# Endpoints
+
+| Resource                                             | GET                                             | POST                  | PUT                      | DELETE                                                                        |
+|------------------------------------------------------|-------------------------------------------------|-----------------------|--------------------------|-------------------------------------------------------------------------------|
+| /accounts                                            | Returns a list of accounts                      | Create a new account  | Not allowed              | Not allowed                                                                   |
+| /accounts/{accountNumber}                            | Returns a specific account                      |  Not allowed          | Not allowed              | Not allowed                                                                   |
+| /clients                                             | Returns a list of clients                       | Create a new client   | Not allowed              | Not allowed                                                                   |
+| /clients/{id}                                        | Returns a specific clients                      |  Not allowed          | Update a specific client | Delete a specific client only if this client doesn't have accounts registered |
+| /transactions/transfers                              | Returns a list of transfers                     | Create a new transfer | Not allowed              | Not allowed                                                                   |
+| /transactions/transfers/{transactionId}              | Returns a specific transfer                     | Not allowed           | Not allowed              | Not allowed                                                                   |
+| /transactions/transfers/from/{dateTransaction}       | Returns transfers starting from a specific date | Not allowed           | Not allowed              | Not allowed                                                                   |
+| /transactions/transfers/account/from/{accountNumber} | Returns transfers from a specific account       | Not allowed           | Not allowed              | Not allowed                                                                   |
+| /transactions/transfers/account/to/{accountNumber}   | Returns transfers to a specific account         | Not allowed           | Not allowed              | Not allowed                                                                   |
+
+## Step by Step to execution
+Here you can find the steps for testing the API, using a REST client (e.g. Postman or Insomnia) and Gradle test option.
+
+# Using a REST client
+At doc folder, you can use the exported JSON file with all endpoints set before at Insomnia application. You can use the Insomnia application and import this file there.
+For other REST client, you can create the endpoits based on the endpoints descripted above.
+
+# Using the Gradle Test option
+All resources tested can be checked using the Gradle. Here the steps:
+
+
