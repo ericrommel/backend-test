@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.erommel.rest.AccountResourceTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2019-07-01T06:57:52" hostname="D11B85N" time="4.235">
+  <properties/>
+  <testcase name="testAddAccount_ClientNotFound" classname="com.erommel.rest.AccountResourceTest" time="3.612"/>
+  <testcase name="testAddAccount_Ok" classname="com.erommel.rest.AccountResourceTest" time="0.175"/>
+  <testcase name="testGetAccount_Exist" classname="com.erommel.rest.AccountResourceTest" time="0.162"/>
+  <testcase name="testGetAccount_NotExist" classname="com.erommel.rest.AccountResourceTest" time="0.115"/>
+  <testcase name="testGetAccounts" classname="com.erommel.rest.AccountResourceTest" time="0.169"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[Jul 01, 2019 8:57:52 AM org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory$InMemoryTestContainer <init>
+INFO: Creating InMemoryTestContainer configured at the base URI http://localhost:9998/
+Jul 01, 2019 8:57:53 AM com.erommel.rest.AccountResourceTest init
+INFO: Init tests for account...
+Jul 01, 2019 8:57:53 AM com.erommel.rest.ClientResource add
+INFO: Receiving request with id param Client{name='Amanda Bertullite', documentId='23485671'}
+Jul 01, 2019 8:57:53 AM org.hibernate.Version logVersion
+INFO: HHH000412: Hibernate Core {5.4.3.Final}
+Jul 01, 2019 8:57:53 AM org.hibernate.annotations.common.reflection.java.JavaReflectionManager <clinit>
+INFO: HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+Jul 01, 2019 8:57:54 AM org.hibernate.dialect.Dialect <init>
+INFO: HHH000400: Using dialect: org.hibernate.dialect.H2Dialect
+Jul 01, 2019 8:57:55 AM org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator initiateService
+INFO: HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+Jul 01, 2019 8:57:55 AM com.erommel.repository.ClientRepository findByDocument
+WARNING: Error to find client by document 23485671
+Jul 01, 2019 8:57:55 AM com.service.ClientService save
+INFO: Client{name='Amanda Bertullite', documentId='23485671'} has been saved
+Jul 01, 2019 8:57:55 AM com.erommel.repository.ClientRepository findById
+SEVERE: Error to find client id 1000000
+javax.persistence.NoResultException: No entity found for query
+	at org.hibernate.query.internal.AbstractProducedQuery.getSingleResult(AbstractProducedQuery.java:1579)
+	at com.erommel.repository.ClientRepository.findById(ClientRepository.java:49)
+	at com.service.ClientService.findById(ClientService.java:86)
+	at com.service.AccountService.save(AccountService.java:34)
+	at com.erommel.rest.AccountResource.add(AccountResource.java:59)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:124)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:167)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:79)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:469)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:391)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:80)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:253)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:232)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:680)
+	at org.glassfish.jersey.test.inmemory.InMemoryConnector.apply(InMemoryConnector.java:251)
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:254)
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:729)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390)
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:728)
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:421)
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.post(JerseyInvocation.java:327)
+	at com.erommel.rest.AccountResourceTest.testAddAccount_ClientNotFound(AccountResourceTest.java:48)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:106)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:66)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:117)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:155)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:137)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
+	at java.lang.Thread.run(Thread.java:748)
+
+Jul 01, 2019 8:57:55 AM com.service.ClientService findById
+INFO: Client 1,000,000 not found
+Jul 01, 2019 8:57:55 AM org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory$InMemoryTestContainer <init>
+INFO: Creating InMemoryTestContainer configured at the base URI http://localhost:9998/
+Jul 01, 2019 8:57:55 AM com.erommel.rest.AccountResourceTest init
+INFO: Init tests for account...
+Jul 01, 2019 8:57:56 AM com.erommel.rest.ClientResource add
+INFO: Receiving request with id param Client{name='Amanda Bertullite', documentId='23485671'}
+Jul 01, 2019 8:57:56 AM com.service.ClientService findById
+INFO: Client 1 has been found
+Jul 01, 2019 8:57:56 AM com.service.AccountService save
+INFO: Account{number=1, balance=100.0, client=Client{name='Amanda Bertullite', documentId='23485671'}} saved
+Jul 01, 2019 8:57:56 AM org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory$InMemoryTestContainer <init>
+INFO: Creating InMemoryTestContainer configured at the base URI http://localhost:9998/
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResourceTest init
+INFO: Init tests for account...
+Jul 01, 2019 8:57:56 AM com.erommel.rest.ClientResource add
+INFO: Receiving request with id param Client{name='Amanda Bertullite', documentId='23485671'}
+Jul 01, 2019 8:57:56 AM com.service.ClientService findById
+INFO: Client 1 has been found
+Jul 01, 2019 8:57:56 AM com.service.AccountService save
+INFO: Account{number=2, balance=100.0, client=Client{name='Amanda Bertullite', documentId='23485671'}} saved
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResource get
+INFO: getting account number 1
+Jul 01, 2019 8:57:56 AM com.service.AccountService findByNumber
+INFO: Account 1 found
+Jul 01, 2019 8:57:56 AM org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory$InMemoryTestContainer <init>
+INFO: Creating InMemoryTestContainer configured at the base URI http://localhost:9998/
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResourceTest init
+INFO: Init tests for account...
+Jul 01, 2019 8:57:56 AM com.erommel.rest.ClientResource add
+INFO: Receiving request with id param Client{name='Amanda Bertullite', documentId='23485671'}
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResource get
+INFO: getting account number 100,000
+Jul 01, 2019 8:57:56 AM com.erommel.repository.Repository findById
+WARNING: Error on fetch Account with id 100000
+Jul 01, 2019 8:57:56 AM com.service.AccountService findByNumber
+INFO: Account 100,000 not found
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResource get
+WARNING: not found
+com.erommel.exception.EntityNotFoundException: Account with id 100000 not found
+	at com.service.AccountService.findByNumber(AccountService.java:64)
+	at com.erommel.rest.AccountResource.get(AccountResource.java:43)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.glassfish.jersey.server.model.internal.ResourceMethodInvocationHandlerFactory.lambda$static$0(ResourceMethodInvocationHandlerFactory.java:52)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher$1.run(AbstractJavaResourceMethodDispatcher.java:124)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.invoke(AbstractJavaResourceMethodDispatcher.java:167)
+	at org.glassfish.jersey.server.model.internal.JavaResourceMethodDispatcherProvider$ResponseOutInvoker.doDispatch(JavaResourceMethodDispatcherProvider.java:176)
+	at org.glassfish.jersey.server.model.internal.AbstractJavaResourceMethodDispatcher.dispatch(AbstractJavaResourceMethodDispatcher.java:79)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:469)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:391)
+	at org.glassfish.jersey.server.model.ResourceMethodInvoker.apply(ResourceMethodInvoker.java:80)
+	at org.glassfish.jersey.server.ServerRuntime$1.run(ServerRuntime.java:253)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:248)
+	at org.glassfish.jersey.internal.Errors$1.call(Errors.java:244)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:244)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:265)
+	at org.glassfish.jersey.server.ServerRuntime.process(ServerRuntime.java:232)
+	at org.glassfish.jersey.server.ApplicationHandler.handle(ApplicationHandler.java:680)
+	at org.glassfish.jersey.test.inmemory.InMemoryConnector.apply(InMemoryConnector.java:251)
+	at org.glassfish.jersey.client.ClientRuntime.invoke(ClientRuntime.java:254)
+	at org.glassfish.jersey.client.JerseyInvocation.lambda$invoke$0(JerseyInvocation.java:729)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:292)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:274)
+	at org.glassfish.jersey.internal.Errors.process(Errors.java:205)
+	at org.glassfish.jersey.process.internal.RequestScope.runInScope(RequestScope.java:390)
+	at org.glassfish.jersey.client.JerseyInvocation.invoke(JerseyInvocation.java:728)
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.method(JerseyInvocation.java:395)
+	at org.glassfish.jersey.client.JerseyInvocation$Builder.get(JerseyInvocation.java:295)
+	at com.erommel.rest.AccountResourceTest.testGetAccount_NotExist(AccountResourceTest.java:123)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:106)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:66)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:117)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:155)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:137)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
+	at java.lang.Thread.run(Thread.java:748)
+
+Jul 01, 2019 8:57:56 AM org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory$InMemoryTestContainer <init>
+INFO: Creating InMemoryTestContainer configured at the base URI http://localhost:9998/
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResourceTest init
+INFO: Init tests for account...
+Jul 01, 2019 8:57:56 AM com.erommel.rest.ClientResource add
+INFO: Receiving request with id param Client{name='Amanda Bertullite', documentId='23485671'}
+Jul 01, 2019 8:57:56 AM com.service.ClientService findById
+INFO: Client 1 has been found
+Jul 01, 2019 8:57:56 AM com.service.AccountService save
+INFO: Account{number=3, balance=100.0, client=Client{name='Amanda Bertullite', documentId='23485671'}} saved
+Jul 01, 2019 8:57:56 AM com.erommel.rest.AccountResource getAccounts
+INFO: Receiving request without param. Return all accounts
+Jul 01, 2019 8:57:56 AM com.service.AccountService findAll
+INFO: Total of accounts found: 3
+]]></system-err>
+</testsuite>

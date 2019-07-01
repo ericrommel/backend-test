@@ -1,0 +1,17 @@
+{
+    "productName": "account-management",
+    "servletContainer": {
+        "id": "jetty9.4",
+        "version": "9.4.14.v20181114",
+        "description": "Jetty 9.4.14.v20181114"
+    },
+    "serverConfig": {
+        
+    },
+    "webApps": [
+        {
+            "contextPath": "/api",
+            "resourceBase": "webapps/account-management-1.0-SNAPSHOT.war"
+        }
+    ]
+}
