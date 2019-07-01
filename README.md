@@ -224,9 +224,9 @@ Create a transfer.
 
 ```json
 {
-	"from": 1,
-	"to": 2,
-	"amount": 16
+    "from": 1,
+    "to": 2,
+    "amount": 16
 }
 ```
 
